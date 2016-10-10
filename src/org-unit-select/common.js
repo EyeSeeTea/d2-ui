@@ -30,6 +30,17 @@ function addToSelection(orgUnits) {
     this.props.onUpdateSelection(res);
 }
 
+function addToSelectionWithIntersection(orgUnits) {
+    //Filter out those elements without a parent in current selected    
+    var res = orgUnits.filter(newOrgUnitItem => {
+        var hasParentSelected = this.props.selected.some(aParent => {
+            return newOrgUnitItem.path && newOrgUnitItem.path.indexOf(aParent) !== -1;
+        });
+        return hasParentSelected;
+    });
+    this.props.onUpdateSelection(res);
+}
+
 function removeFromSelection(orgUnits) {
     this.props.onUpdateSelection(this.props.selected.filter(orgUnit => orgUnits.indexOf(orgUnit) === -1));
 }
@@ -79,6 +90,7 @@ function renderControls() {
 
 export {
     addToSelection,
+    addToSelectionWithIntersection,
     removeFromSelection,
     handleChangeSelection,
     renderDropdown,

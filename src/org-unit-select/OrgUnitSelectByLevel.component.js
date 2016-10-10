@@ -1,7 +1,7 @@
 import React from 'react';
 import log from 'loglevel';
 
-import { addToSelection, removeFromSelection, handleChangeSelection, renderDropdown, renderControls } from './common';
+import { addToSelection, addToSelectionWithIntersection, removeFromSelection, handleChangeSelection, renderDropdown, renderControls } from './common';
 
 
 class OrgUnitSelectByLevel extends React.Component {
@@ -15,6 +15,7 @@ class OrgUnitSelectByLevel extends React.Component {
         this.levelCache = {};
 
         this.addToSelection = addToSelection.bind(this);
+        this.addToSelectionWithIntersection = addToSelectionWithIntersection.bind(this);        
         this.removeFromSelection = removeFromSelection.bind(this);
         this.handleChangeSelection = handleChangeSelection.bind(this);
         this.renderControls = renderControls.bind(this);
@@ -35,8 +36,8 @@ class OrgUnitSelectByLevel extends React.Component {
                 this.setState({ loading: true });
 
                 const d2 = this.context.d2;
-                d2.models.organisationUnits.list({ paging: false, level, fields: 'id' })
-                    .then(orgUnits => orgUnits.toArray().map(orgUnit => orgUnit.id))
+                d2.models.organisationUnits.list({ paging: false, level, fields: 'id,path' })
+                    .then(orgUnits => orgUnits.toArray().map(orgUnit => ({id:orgUnit.id,path:orgUnit.path})))
                     .then(orgUnitIds => {
                         log.debug(`Loaded ${orgUnitIds.length} org units for level ${level}`);
                         this.setState({ loading: false });
@@ -55,15 +56,19 @@ class OrgUnitSelectByLevel extends React.Component {
 
     handleSelect() {
         this.getOrgUnitsForLevel(this.state.selection)
-            .then(orgUnits => {
-                this.addToSelection(orgUnits);
+            .then(orgUnits => {      
+                if (this.props.intersectionPolicy) {
+                    this.addToSelectionWithIntersection(orgUnits);
+                } else {
+                    this.addToSelection(orgUnits.map(orgUnit => orgUnit.id));
+                }                
             });
     }
 
     handleDeselect() {
         this.getOrgUnitsForLevel(this.state.selection)
             .then(orgUnits => {
-                this.removeFromSelection(orgUnits);
+                this.removeFromSelection(orgUnits.map(orgUnit => orgUnit.id));
             });
     }
 
@@ -92,6 +97,9 @@ OrgUnitSelectByLevel.propTypes = {
     // Whenever the selection changes, onUpdateSelection will be called with
     // one argument: The new array of selected organisation units
     onUpdateSelection: React.PropTypes.func.isRequired,
+    
+    //intersectionPolicy a boolean that tells if selection must a subset of current selection or not
+    intersectionPolicy: React.PropTypes.bool,    
 
     // TODO: Add level cache prop?
 };
