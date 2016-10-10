@@ -38,7 +38,7 @@ function addToSelectionWithIntersection(orgUnits) {
         });
         return hasParentSelected;
     });
-    this.props.onUpdateSelection(res);
+    this.addToSelection(res.map(orgUnit => orgUnit.id));    
 }
 
 function removeFromSelection(orgUnits) {
