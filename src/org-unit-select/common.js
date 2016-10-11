@@ -33,10 +33,9 @@ function addToSelection(orgUnits) {
 function addToSelectionWithIntersection(orgUnits) {
     //Filter out those elements without a parent in current selected    
     var res = orgUnits.filter(newOrgUnitItem => {
-        var hasParentSelected = this.props.selected.some(aParent => {
+        return this.props.selected.some(aParent => {
             return newOrgUnitItem.path && newOrgUnitItem.path.indexOf(aParent) !== -1;
         });
-        return hasParentSelected;
     });
     this.addToSelection(res.map(orgUnit => orgUnit.id));    
 }
