@@ -19,6 +19,14 @@ const style = {
 };
 style.button1 = Object.assign({}, style.button, { marginLeft: 0 });
 
+function filterWithParentSelected(orgUnits){
+    //Filter only those with a selected parent
+    return orgUnits.filter(newOrgUnitItem => {
+        return this.props.selected.some(aParent => {
+            return newOrgUnitItem.path && newOrgUnitItem.id!==aParent && newOrgUnitItem.path.indexOf(aParent) !== -1;
+        });
+    });    
+}
 
 function addToSelection(orgUnits) {
     const res = orgUnits;
@@ -30,18 +38,18 @@ function addToSelection(orgUnits) {
     this.props.onUpdateSelection(res);
 }
 
-function addToSelectionWithIntersection(orgUnits) {
-    //Filter out those elements without a parent in current selected    
-    var res = orgUnits.filter(newOrgUnitItem => {
-        return this.props.selected.some(aParent => {
-            return newOrgUnitItem.path && newOrgUnitItem.path.indexOf(aParent) !== -1;
-        });
-    });
-    this.addToSelection(res.map(orgUnit => orgUnit.id));    
+function addToSelectionWithIntersection(orgUnits) {    
+    var orgUnitsWithParentSelected = this.filterWithParentSelected(orgUnits);
+    this.addToSelection(orgUnitsWithParentSelected.map(orgUnit => orgUnit.id));    
 }
 
 function removeFromSelection(orgUnits) {
     this.props.onUpdateSelection(this.props.selected.filter(orgUnit => orgUnits.indexOf(orgUnit) === -1));
+}
+
+function removeFromSelectionWithIntersection(orgUnits) {
+    var orgUnitsWithParentSelected = this.filterWithParentSelected(orgUnits);
+    this.removeFromSelection(orgUnitsWithParentSelected.map(orgUnit => orgUnit.id));
 }
 
 function handleChangeSelection(event) {
@@ -88,9 +96,11 @@ function renderControls() {
 }
 
 export {
+    filterWithParentSelected,
     addToSelection,
     addToSelectionWithIntersection,
     removeFromSelection,
+    removeFromSelectionWithIntersection,
     handleChangeSelection,
     renderDropdown,
     renderControls,

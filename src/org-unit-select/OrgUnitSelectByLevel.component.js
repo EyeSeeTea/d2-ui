@@ -1,7 +1,7 @@
 import React from 'react';
 import log from 'loglevel';
 
-import { addToSelection, addToSelectionWithIntersection, removeFromSelection, handleChangeSelection, renderDropdown, renderControls } from './common';
+import { filterWithParentSelected, addToSelection, addToSelectionWithIntersection, removeFromSelection, removeFromSelectionWithIntersection, handleChangeSelection, renderDropdown, renderControls } from './common';
 
 
 class OrgUnitSelectByLevel extends React.Component {
@@ -14,9 +14,11 @@ class OrgUnitSelectByLevel extends React.Component {
         };
         this.levelCache = {};
 
+        this.filterWithParentSelected = filterWithParentSelected.bind(this);
         this.addToSelection = addToSelection.bind(this);
-        this.addToSelectionWithIntersection = addToSelectionWithIntersection.bind(this);        
+        this.addToSelectionWithIntersection = addToSelectionWithIntersection.bind(this);                
         this.removeFromSelection = removeFromSelection.bind(this);
+        this.removeFromSelectionWithIntersection = removeFromSelectionWithIntersection.bind(this);
         this.handleChangeSelection = handleChangeSelection.bind(this);
         this.renderControls = renderControls.bind(this);
 
@@ -68,7 +70,11 @@ class OrgUnitSelectByLevel extends React.Component {
     handleDeselect() {
         this.getOrgUnitsForLevel(this.state.selection)
             .then(orgUnits => {
-                this.removeFromSelection(orgUnits.map(orgUnit => orgUnit.id));
+                if (this.props.intersectionPolicy) {
+                    this.removeFromSelectionWithIntersection(orgUnits);
+                } else {
+                    this.removeFromSelection(orgUnits.map(orgUnit => orgUnit.id));
+                }
             });
     }
 
