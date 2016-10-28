@@ -14,6 +14,7 @@ const DataElementOperandSelector = React.createClass({
     propTypes: {
         dataElementOperandSelectorActions: React.PropTypes.object.isRequired,
         onItemDoubleClick: React.PropTypes.func.isRequired,
+        onItemClick: React.PropTypes.func,
         listStyle: React.PropTypes.object,
     },
 
@@ -91,6 +92,7 @@ const DataElementOperandSelector = React.createClass({
                 {this.state.isLoading ? <LinearProgress mode="indeterminate" /> : null}
                 <ListSelectAsync size="12"
                                  onItemDoubleClick={this.props.onItemDoubleClick}
+                                 onItemClick={this.props.onItemClick}
                                  source={this.storeObservable}
                                  listStyle={this.props.listStyle}
                     />

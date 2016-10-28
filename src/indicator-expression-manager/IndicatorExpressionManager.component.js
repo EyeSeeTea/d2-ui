@@ -15,6 +15,8 @@ import Heading from '../headings/Heading.component';
 import OrganisationUnitGroupSelector from './OrganisationUnitGroupSelector.component';
 import ConstantSelector from './ConstantSelector.component';
 
+import CategoryOptionCombinationDraw from './CategoryOptionCombinationDraw.component'
+
 config.i18n.strings.add('data_elements');
 config.i18n.strings.add('description');
 config.i18n.strings.add('organisation_unit_counts');
@@ -173,9 +175,11 @@ const IndicatorExpressionManager = React.createClass({
                     <Tabs>
                         <Tab label={this.getTranslation('data_elements')}>
                             <DataElementOperandSelector onItemDoubleClick={this.dataElementOperandSelected}
+                                                        onItemClick={this.dataElementOperandClicked}
                                                         dataElementOperandSelectorActions={this.props.dataElementOperandSelectorActions}
                                                         listStyle={listStyle}
                                 />
+                            <CategoryOptionCombinationDraw/>
                         </Tab>
                         <Tab label={this.getTranslation('programs')}>
                             <ProgramOperandSelector programOperandSelected={this.programOperandSelected} />
@@ -252,9 +256,15 @@ const IndicatorExpressionManager = React.createClass({
     },
 
     dataElementOperandSelected(dataElementOperandId) {
+
         const dataElementOperandFormula = ['#{', dataElementOperandId, '}'].join('');
 
         this.appendToFormula(dataElementOperandFormula);
+    },
+
+    dataElementOperandClicked(dataElementOperandId){
+        console.log(retaka);
+        
     },
 
     requestExpressionStatus() {
