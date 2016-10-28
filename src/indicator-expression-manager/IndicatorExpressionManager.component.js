@@ -3,6 +3,7 @@ import ExpressionDescription from './ExpressionDescription.component';
 import ExpressionOperators from './ExpressionOperators.component';
 import ExpressionFormula from './ExpressionFormula.component';
 import DataElementOperandSelector from './DataElementOperandSelector.component';
+import TwoPanelLayout from '../layout/TwoPanel.component';
 import Tabs from 'material-ui/lib/tabs/tabs';
 import Tab from 'material-ui/lib/tabs/tab';
 import Paper from 'material-ui/lib/paper';
@@ -14,6 +15,8 @@ import ProgramOperandSelector from './ProgramOperandSelector';
 import Heading from '../headings/Heading.component';
 import OrganisationUnitGroupSelector from './OrganisationUnitGroupSelector.component';
 import ConstantSelector from './ConstantSelector.component';
+
+import CategoryOptionCombinationDraw from './CategoryOptionCombinationDraw.component'
 
 config.i18n.strings.add('data_elements');
 config.i18n.strings.add('description');
@@ -172,10 +175,14 @@ const IndicatorExpressionManager = React.createClass({
                     <Paper style={{ padding: '0 0rem', marginTop: '1rem', minHeight: 395 }}>
                     <Tabs>
                         <Tab label={this.getTranslation('data_elements')}>
-                            <DataElementOperandSelector onItemDoubleClick={this.dataElementOperandSelected}
-                                                        dataElementOperandSelectorActions={this.props.dataElementOperandSelectorActions}
-                                                        listStyle={listStyle}
-                                />
+                            <TwoPanelLayout marginTop={'0.5rem'} sizeRatio={[0.7,0.3]}>
+                                <DataElementOperandSelector onItemDoubleClick={this.dataElementOperandSelected}
+                                    onItemClick={this.dataElementOperandClicked}
+                                    dataElementOperandSelectorActions={this.props.dataElementOperandSelectorActions}
+                                    listStyle={listStyle}
+                                    />
+                                <CategoryOptionCombinationDraw/>
+                            </TwoPanelLayout>                            
                         </Tab>
                         <Tab label={this.getTranslation('programs')}>
                             <ProgramOperandSelector programOperandSelected={this.programOperandSelected} />
@@ -252,9 +259,15 @@ const IndicatorExpressionManager = React.createClass({
     },
 
     dataElementOperandSelected(dataElementOperandId) {
+
         const dataElementOperandFormula = ['#{', dataElementOperandId, '}'].join('');
 
         this.appendToFormula(dataElementOperandFormula);
+    },
+
+    dataElementOperandClicked(dataElementOperandId){
+        console.log(retaka);
+        
     },
 
     requestExpressionStatus() {

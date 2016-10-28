@@ -7,6 +7,7 @@ const ListSelectAsync = React.createClass({
     propTypes: {
         source: React.PropTypes.instanceOf(Observable),
         onItemDoubleClick: React.PropTypes.func.isRequired,
+        onItemClick: React.PropTypes.func,
         listStyle: React.PropTypes.object,
     },
 
@@ -36,6 +37,7 @@ const ListSelectAsync = React.createClass({
         return (
             <ListSelect {...this.props}
                         onItemDoubleClick={this.props.onItemDoubleClick}
+                        onItemClick={this.props.onItemClick}
                         source={this.state.listSource}
                         listStyle={this.props.listStyle}
                 />

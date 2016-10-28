@@ -9,7 +9,7 @@ function TwoPanelSelector(props) {
             flex: 1,
             display: 'flex',
             flexOrientation: 'row',
-            marginTop: '8rem',
+            marginTop: props.marginTop,
         },
     };
     let childrenToRender;
@@ -50,6 +50,7 @@ function TwoPanelSelector(props) {
     );
 }
 TwoPanelSelector.defaultProps = {
+    marginTop: '8rem',
     sizeRatio: ['0 0 320px', 1],
     children: [],
     childWrapStyle: {},

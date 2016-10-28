@@ -7,6 +7,7 @@ export default React.createClass({
             value: React.PropTypes.string,
         })).isRequired,
         onItemDoubleClick: React.PropTypes.func.isRequired,
+        onItemClick: React.PropTypes.func,
         listStyle: React.PropTypes.object,
         size: React.PropTypes.number,
     },
@@ -17,7 +18,7 @@ export default React.createClass({
                 <select size={this.props.size || 15} style={Object.assign({overflowX: 'auto'}, this.props.listStyle)}>
                     {this.props.source.map(item => {
                         return (
-                            <option style={{ padding: '.25rem' }} onDoubleClick={this.listItemDoubleClicked} value={item.value}>{item.label}</option>
+                            <option style={{ padding: '.25rem' }} onClick={this.listItemClicked} onDoubleClick={this.listItemDoubleClicked} value={item.value}>{item.label}</option>
                         );
                     })}
                 </select>
@@ -32,4 +33,12 @@ export default React.createClass({
             this.props.onItemDoubleClick(clickedItemValue);
         }
     },
+
+    listItemClicked(event) {
+        const clickedItemValue = event.target.value;
+
+        if (this.props.onItemClick) {
+            this.props.onItemClick(clickedItemValue);
+        }
+    }
 });
