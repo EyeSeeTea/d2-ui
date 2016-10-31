@@ -10,12 +10,13 @@ export default React.createClass({
         onItemClick: React.PropTypes.func,
         listStyle: React.PropTypes.object,
         size: React.PropTypes.number,
+        selectedValue: React.PropTypes.string
     },
 
     render() {
         return (
             <div className="list-select">
-                <select size={this.props.size || 15} style={Object.assign({overflowX: 'auto'}, this.props.listStyle)}>
+                <select value={this.props.selectedValue} size={this.props.size || 15} style={Object.assign({overflowX: 'auto'}, this.props.listStyle)}>
                     {this.props.source.map(item => {
                         return (
                             <option style={{ padding: '.25rem' }} onClick={this.listItemClicked} onDoubleClick={this.listItemDoubleClicked} value={item.value}>{item.label}</option>
@@ -28,7 +29,6 @@ export default React.createClass({
 
     listItemDoubleClicked(event) {
         const clickedItemValue = event.target.value;
-
         if (this.props.onItemDoubleClick) {
             this.props.onItemDoubleClick(clickedItemValue);
         }
@@ -36,7 +36,6 @@ export default React.createClass({
 
     listItemClicked(event) {
         const clickedItemValue = event.target.value;
-
         if (this.props.onItemClick) {
             this.props.onItemClick(clickedItemValue);
         }

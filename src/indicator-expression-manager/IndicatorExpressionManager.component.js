@@ -140,6 +140,13 @@ const IndicatorExpressionManager = React.createClass({
 
     render() {
         const listStyle = { width: '100%', outline: 'none', border: 'none', padding: '0rem 1rem' };
+        
+        const dataElementOperandSelectorStyle = {width:'50%',float:'left'};
+        const categoryOptionCombinationDrawStyle = {width:'50%',float:'left'};
+        if(!this.state.dataElementOperandId){
+            dataElementOperandSelectorStyle.width='100%';
+            categoryOptionCombinationDrawStyle.display='none';
+        }
 
         const statusMessageClasses = classes(
             'indicator-expression-manager__readable-expression__message',
@@ -175,14 +182,20 @@ const IndicatorExpressionManager = React.createClass({
                     <Paper style={{ padding: '0 0rem', marginTop: '1rem', minHeight: 395 }}>
                     <Tabs>
                         <Tab label={this.getTranslation('data_elements')}>
-                            <TwoPanelLayout marginTop={'0.5rem'} sizeRatio={[0.7,0.3]}>
-                                <DataElementOperandSelector onItemDoubleClick={this.dataElementOperandSelected}
-                                    onItemClick={this.dataElementOperandClicked}
-                                    dataElementOperandSelectorActions={this.props.dataElementOperandSelectorActions}
-                                    listStyle={listStyle}
-                                    />
-                                <CategoryOptionCombinationDraw/>
-                            </TwoPanelLayout>                            
+                            <div>
+                                <div style={dataElementOperandSelectorStyle}>
+                                    <DataElementOperandSelector                                    
+                                        selectedValue={this.state.dataElementOperandId} 
+                                        onItemDoubleClick={this.dataElementOperandSelected}
+                                        onItemClick={this.dataElementOperandClicked}
+                                        dataElementOperandSelectorActions={this.props.dataElementOperandSelectorActions}
+                                        listStyle={listStyle}
+                                        />                                
+                                </div>
+                                <div style={categoryOptionCombinationDrawStyle}>
+                                    <CategoryOptionCombinationDraw dataElementOperandId={this.state.dataElementOperandId}/>
+                                </div>                                                                
+                            </div>                     
                         </Tab>
                         <Tab label={this.getTranslation('programs')}>
                             <ProgramOperandSelector programOperandSelected={this.programOperandSelected} />
@@ -266,8 +279,15 @@ const IndicatorExpressionManager = React.createClass({
     },
 
     dataElementOperandClicked(dataElementOperandId){
-        console.log(retaka);
-        
+        if(this.state.dataElementOperandId === dataElementOperandId){
+            this.setState({
+                dataElementOperandId:null
+            })                              
+        }else{
+            this.setState({
+                dataElementOperandId
+            })            
+        }        
     },
 
     requestExpressionStatus() {

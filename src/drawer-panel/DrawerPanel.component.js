@@ -13,28 +13,32 @@ const DrawerPanel = React.createClass({
   // },
 
   // handleToggle = () => this.setState({open: !this.state.open}),
+  
+    propTypes: {
+        title: React.PropTypes.string,
+    },  
 
-  getInitialState() {
-      return {
-          open: false,
-      };
-  },
+    getInitialState() {
+        return {
+            open: false,
+        };
+    },
 
-  render() {
-    const classList = classes(
-    {
-        'drawer-embedded': this.props.embedded
-    });      
-      
-    return (
-      <div>
-        <LeftNav className={classList} width={this.props.width || 100} openSecondary={true} open={this.state.open} >
-          <AppBar title="AppBar" />
-          {this.props.children}
-        </LeftNav>
-      </div>
-    );
-  }
+    render() {
+        const classList = classes(
+            {
+                'drawer-embedded': this.props.embedded
+            });
+
+        return (
+            <div>
+                <LeftNav className={classList} width={this.props.width || '100%'} openSecondary={true} open={this.state.open} >
+                    <AppBar title={this.props.title} />
+                    {this.props.children}
+                </LeftNav>
+            </div>
+        );
+    }
 });
 
 export default DrawerPanel;

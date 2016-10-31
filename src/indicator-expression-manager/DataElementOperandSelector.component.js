@@ -16,6 +16,7 @@ const DataElementOperandSelector = React.createClass({
         onItemDoubleClick: React.PropTypes.func.isRequired,
         onItemClick: React.PropTypes.func,
         listStyle: React.PropTypes.object,
+        selectedValue: React.PropTypes.string
     },
 
     mixins: [Translate],
@@ -95,6 +96,7 @@ const DataElementOperandSelector = React.createClass({
                                  onItemClick={this.props.onItemClick}
                                  source={this.storeObservable}
                                  listStyle={this.props.listStyle}
+                                 selectedValue={this.props.selectedValue}
                     />
             </div>
         );

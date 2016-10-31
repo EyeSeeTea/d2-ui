@@ -9,6 +9,7 @@ const ListSelectAsync = React.createClass({
         onItemDoubleClick: React.PropTypes.func.isRequired,
         onItemClick: React.PropTypes.func,
         listStyle: React.PropTypes.object,
+        selectedValue:React.PropTypes.string
     },
 
     getInitialState() {
