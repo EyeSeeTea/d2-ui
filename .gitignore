@@ -8,7 +8,6 @@ coverage/
 
 dist/
 build/
-lib/
 
 stats.json
 npm-debug.log
