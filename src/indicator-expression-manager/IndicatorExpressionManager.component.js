@@ -142,7 +142,8 @@ const IndicatorExpressionManager = React.createClass({
         const listStyle = { width: '100%', outline: 'none', border: 'none', padding: '0rem 1rem' };
         
         const dataElementOperandSelectorStyle = {width:'50%',float:'left'};
-        const categoryOptionCombinationDrawStyle = {width:'50%',float:'left'};
+        //const categoryOptionCombinationDrawStyle = {width:'50%',top: 0, left: 0, position: 'absolute'};
+        const categoryOptionCombinationDrawStyle = {};
         if(!this.state.dataElementOperandId){
             dataElementOperandSelectorStyle.width='100%';
             categoryOptionCombinationDrawStyle.display='none';

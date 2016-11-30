@@ -6,21 +6,47 @@ import log from 'loglevel';
 import SelectField from 'material-ui/lib/select-field';
 import MenuItem from 'material-ui/lib/menus/menu-item';
 
-const CategoryOptionCombinationDraw = React.createClass({   
+//import d2Lib from 'd2/lib/d2';
+
+//const CategoryOptionCombinationDraw = React.createClass({   
     
-    propTypes: {
-        dataElementOperandId: React.PropTypes.string,
-    },   
+class CategoryOptionCombinationDraw extends React.Component {
+
+    constructor(...args) {
+        super(...args);
+
+        this.state = {
+            value : null
+        };
+
+        console.log(this);
+
+        // this.addToSelection = addToSelection.bind(this);
+
+        // this.handleSelectAll = this.handleSelectAll.bind(this);
+        // this.handleDeselectAll = this.handleDeselectAll.bind(this);
+
+        //this.getTranslation = context.d2.i18n.getTranslation.bind(context.d2.i18n);
+    }
+
+     
     
-    getInitialState() {
+    getInitialState = () => {
         return {
             value:null            
         };
-    },       
+    }
     
-    handleChange(event, index, value){
-        this.setState({ value })        
-    },    
+    handleChange = (event, index, value) => {
+        this.setState({ value })      
+
+    // const searchQueryRequest = d2Lib.getInstance()
+    //     .then(d2 => d2.models[modelTypeToSearch])
+    //     .then(modelType => modelType.filter().on(searchBy).ilike(valueToSearchFor))
+    //     .then(modelTypeWithFilter => modelTypeWithFilter.list(options))
+    //     .then(collection => collection.toArray())
+    //     .catch(error => log.error(error));
+    }    
     
     render() {        
         const contentStyle={
@@ -48,9 +74,13 @@ const CategoryOptionCombinationDraw = React.createClass({
                 </SelectField>                
             </DrawerPanel>
         );
-    },
+    };
 
-});
+};
+
+CategoryOptionCombinationDraw.propTypes= {
+    dataElementOperandId: React.PropTypes.string,
+};  
 
 export default CategoryOptionCombinationDraw; 
 
