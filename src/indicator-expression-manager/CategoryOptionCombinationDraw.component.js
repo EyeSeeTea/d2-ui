@@ -13,21 +13,17 @@ config.i18n.strings.add('please_select_a_dataset');
 export default React.createClass({   
     
     propTypes: {
-        dataElementOperandId: React.PropTypes.string,
+        dataElementOperandId: React.PropTypes.string
     },   
 
     mixins: [Translate],
     
     getInitialState() {
         return {
-            value:null            
+            value: null         
         };
     },       
     
-    // handleChange(event, index, value){
-    //     this.setState({ value })        
-    // },    
-
     componentDidMount() {
         console.log("mounting")
 
@@ -57,9 +53,51 @@ export default React.createClass({
     },
 
     _loadCategoryOptions(event, index, menuItem) {
-        console.log("loading categories");
-        console.log(menuItem)
-        //this.state.categoryComboItems.get()
+        this.setState({ categoryComboId: menuItem })   
+        var categoryCombo = this.state.categoryComboItems.get(menuItem)
+        this.setState({categories: categoryCombo.categories})
+        
+    },
+
+    setCategoryOption(category, event, index, selectedCategoryOption) {
+
+        console.log("selecting category option")
+        console.log(selectedCategoryOption)
+        console.log(category)
+    },
+
+    renderMenuItemsForSelectFields(categoryOptions) {
+        const menuItemsForSelectFields = []
+        categoryOptions.map(function(categoryOption){
+            menuItemsForSelectFields.push(<MenuItem key={categoryOption.id} value={categoryOption.id} primaryText={categoryOption.displayName}/>);
+        })
+        return menuItemsForSelectFields;
+    },
+
+    renderSelectFields() {
+        var _this = this;
+
+        const contentStyle={
+            padding:"0.5rem"
+        }
+
+        const categorySelectFields = []
+        this.state.categories.map(function(category){
+            
+            categorySelectFields.push(<SelectField
+                style={contentStyle}
+                // value={this.state.value}
+                // onChange={this._loadCategoryOptions}
+                onChange={_this.setCategoryOption.bind(this, category)}
+                floatingLabelText="Choose Category"
+                // menuItems={this.renderMenuItems}
+                >
+                {category.categoryOptions ? _this.renderMenuItemsForSelectFields(category.categoryOptions): null}  
+            </SelectField>)
+        })
+        // Add Button to Submit
+        //categorySelectFields.push()
+        return categorySelectFields;
     },
 
     renderMenuItems() {
@@ -80,14 +118,14 @@ export default React.createClass({
                 
                 <SelectField
                     style={contentStyle}
-                    value={this.state.value}
+                    value={this.state.categoryComboId}
                     onChange={this._loadCategoryOptions}
                     floatingLabelText="Choose Category Combo"
-                    // menuItems={this.renderMenuItems}
                     >
                     {this.state.categoryComboItems ? this.renderMenuItems(): null}
+                </SelectField>
 
-                </SelectField>                
+                {this.state.categories ? this.renderSelectFields(): null}            
             </DrawerPanel>
         );
     },
