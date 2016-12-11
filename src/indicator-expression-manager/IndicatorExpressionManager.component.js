@@ -143,8 +143,8 @@ const IndicatorExpressionManager = React.createClass({
         
         const dataElementOperandSelectorStyle = {width:'50%',float:'left'};
         //const categoryOptionCombinationDrawStyle = {width:'50%',top: 0, left: 0, position: 'absolute'};
-        const categoryOptionCombinationDrawStyle = {};
-        if(!this.state.dataElementOperandId){
+        const categoryOptionCombinationDrawStyle = {'max-height': '25em'};
+        if(!this.state.dataElementOperandId || this.state.dataElementOperandId.indexOf(".") == -1){
             dataElementOperandSelectorStyle.width='100%';
             categoryOptionCombinationDrawStyle.display='none';
         }
@@ -194,7 +194,7 @@ const IndicatorExpressionManager = React.createClass({
                                         />                                
                                 </div>
                                 <div style={categoryOptionCombinationDrawStyle}>
-                                    <CategoryOptionCombinationDraw dataElementOperandId={this.state.dataElementOperandId}/>
+                                    <CategoryOptionCombinationDraw dataElementOperandId={this.state.dataElementOperandId} dataElementOperandSelectorAction={this.dataElementOperandSelected}/>
                                 </div>                                                                
                             </div>                     
                         </Tab>
