@@ -4,16 +4,8 @@ import LeftNav from 'material-ui/lib/left-nav';
 import AppBar from 'material-ui/lib/app-bar';
 import FlatButtonLabel from 'material-ui/lib/buttons/flat-button-label';
 
-
 const DrawerPanel = React.createClass({
 
-  // constructor(props) {
-  //   super(props);
-  //   this.state = {open: false};
-  // },
-
-  // handleToggle = () => this.setState({open: !this.state.open}),
-  
     propTypes: {
         title: React.PropTypes.string,
     },  
