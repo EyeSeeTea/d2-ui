@@ -96,7 +96,7 @@ const IndicatorExpressionManager = React.createClass({
             expressionStatus: {
                 description: '',
                 isValid: false,
-            },
+            }
         };
     },
 
@@ -140,12 +140,12 @@ const IndicatorExpressionManager = React.createClass({
 
     render() {
         const listStyle = { width: '100%', outline: 'none', border: 'none', padding: '0rem 1rem' };
-        
-        const dataElementOperandSelectorStyle = {width:'50%',float:'left'};
+
+        const dataElementOperandSelectorStyle = { width: '50%', float: 'left' };
         const categoryOptionCombinationDrawStyle = {};
-        if(!this.state.dataElementOperandId || this.state.dataElementOperandId.indexOf(".") == -1){
-            dataElementOperandSelectorStyle.width='100%';
-            categoryOptionCombinationDrawStyle.display='none';
+        if (!this.state.dataElementOperandId || !this.state.categoryCombos || this.state.categoryCombos.values().length > 0) {
+            dataElementOperandSelectorStyle.width = '100%';
+            categoryOptionCombinationDrawStyle.display = 'none';
         }
 
         const statusMessageClasses = classes(
@@ -165,54 +165,58 @@ const IndicatorExpressionManager = React.createClass({
                 <Heading style={{ margin: 0, padding: '2rem 2rem 1rem' }} level={3} text={this.props.titleText} />
                 <div className="indicator-expression-manager__left" style={{ paddingLeft: '2rem' }}>
                     <Paper style={{ padding: '0 2rem', marginTop: '1rem', minHeight: 395 }}>
-                    <div className="indicator-expression-manager__description">
-                        <ExpressionDescription descriptionValue={this.state.description}
-                                               descriptionLabel={this.getTranslation('description')}
-                                               onDescriptionChange={this.descriptionChange}
-                                               errorText={!isDescriptionValid() ? this.getTranslation('this_field_is_required') : undefined}
-                                               onBlur={this.requestExpressionStatus}
-                            />
-                    </div>
-                    <ExpressionFormula onFormulaChange={this.formulaChange}
-                                       formula={this.state.formula} />
-                    <ExpressionOperators operatorClicked={this.addOperatorToFormula} />
+                        <div className="indicator-expression-manager__description">
+                            <ExpressionDescription descriptionValue={this.state.description}
+                                descriptionLabel={this.getTranslation('description')}
+                                onDescriptionChange={this.descriptionChange}
+                                errorText={!isDescriptionValid() ? this.getTranslation('this_field_is_required') : undefined}
+                                onBlur={this.requestExpressionStatus}
+                                />
+                        </div>
+                        <ExpressionFormula onFormulaChange={this.formulaChange}
+                            formula={this.state.formula} />
+                        <ExpressionOperators operatorClicked={this.addOperatorToFormula} />
                     </Paper>
                 </div>
                 <div className="indicator-expression-manager__right" style={{ paddingRight: '2rem' }}>
                     <Paper style={{ padding: '0 0rem', marginTop: '1rem', minHeight: 395 }}>
-                    <Tabs>
-                        <Tab label={this.getTranslation('data_elements')}>
-                            <div>
-                                <div style={dataElementOperandSelectorStyle}>
-                                    <DataElementOperandSelector                                    
-                                        selectedValue={this.state.dataElementOperandId} 
-                                        onItemDoubleClick={this.dataElementOperandSelected}
-                                        onItemClick={this.dataElementOperandClicked}
-                                        dataElementOperandSelectorActions={this.props.dataElementOperandSelectorActions}
-                                        listStyle={listStyle}
-                                        />                                
+                        <Tabs>
+                            <Tab label={this.getTranslation('data_elements')}>
+                                <div>
+                                    <div style={dataElementOperandSelectorStyle}>
+                                        <DataElementOperandSelector
+                                            selectedValue={this.state.dataElementOperandId}
+                                            onItemDoubleClick={this.dataElementOperandSelected}
+                                            onItemClick={this.dataElementOperandClicked}
+                                            dataElementOperandSelectorActions={this.props.dataElementOperandSelectorActions}
+                                            listStyle={listStyle}
+                                            />
+                                    </div>
+                                    <div style={categoryOptionCombinationDrawStyle}>
+                                        <CategoryOptionCombinationDraw
+                                            dataElementOperandId={this.state.dataElementOperandId}
+                                            categoryCombos={this.state.categoryCombos}
+                                            dataElementOperandSelectorAction={this.dataElementOperandSelected}
+                                            />
+                                    </div>
                                 </div>
-                                <div style={categoryOptionCombinationDrawStyle}>
-                                    <CategoryOptionCombinationDraw dataElementOperandId={this.state.dataElementOperandId} dataElementOperandSelectorAction={this.dataElementOperandSelected}/>
-                                </div>                                                                
-                            </div>                     
-                        </Tab>
-                        <Tab label={this.getTranslation('programs')}>
-                            <ProgramOperandSelector programOperandSelected={this.programOperandSelected} />
-                        </Tab>
-                        <Tab label={this.getTranslation('organisation_unit_counts')}>
-                            <OrganisationUnitGroupSelector onItemDoubleClick={this.organisationUnitGroupSelected}
-                                        source={this.props.organisationUnitGroupOptions}
-                                        listStyle={listStyle}
-                                />
-                        </Tab>
-                        <Tab label={this.getTranslation('constants')}>
-                            <ConstantSelector onItemDoubleClick={this.constantSelected}
-                                        source={this.props.constantOptions}
-                                        listStyle={listStyle}
-                                />
-                        </Tab>
-                    </Tabs>
+                            </Tab>
+                            <Tab label={this.getTranslation('programs')}>
+                                <ProgramOperandSelector programOperandSelected={this.programOperandSelected} />
+                            </Tab>
+                            <Tab label={this.getTranslation('organisation_unit_counts')}>
+                                <OrganisationUnitGroupSelector onItemDoubleClick={this.organisationUnitGroupSelected}
+                                    source={this.props.organisationUnitGroupOptions}
+                                    listStyle={listStyle}
+                                    />
+                            </Tab>
+                            <Tab label={this.getTranslation('constants')}>
+                                <ConstantSelector onItemDoubleClick={this.constantSelected}
+                                    source={this.props.constantOptions}
+                                    listStyle={listStyle}
+                                    />
+                            </Tab>
+                        </Tabs>
                     </Paper>
                 </div>
                 <div className="indicator-expression-manager__readable-expression" style={{ paddingLeft: '2rem', paddingRight: '2rem' }}>
@@ -278,16 +282,34 @@ const IndicatorExpressionManager = React.createClass({
         this.appendToFormula(dataElementOperandFormula);
     },
 
-    dataElementOperandClicked(dataElementOperandId){
-        if(this.state.dataElementOperandId === dataElementOperandId){
+    dataElementOperandClicked(dataElementOperandId) {
+        if (this.state.dataElementOperandId === dataElementOperandId) {
             this.setState({
-                dataElementOperandId:null
-            })                              
-        }else{
+                dataElementOperandId: null
+            })
+        } else {
             this.setState({
-                dataElementOperandId
-            })            
-        }        
+                dataElementOperandId: dataElementOperandId,
+                categoryCombos: null
+            });
+
+            if (!dataElementOperandId || dataElementOperandId.indexOf(".") != -1) {
+                this.context.d2.models.dataElements.get(dataElementOperandId, { paging: false, fields: 'id, dataSets[id, categoryCombo[id,displayName, categories[id,displayName,categoryOptions[id,displayName]],categoryOptionCombos[id,categoryOptions]]]' })
+                    .then(dataElement => dataElement.dataSets.toArray())
+                    .then(dataSets => {
+                        if (dataSets.length > 0) {
+                            const categoryCombos =
+                                new Map(dataSets.map(dataSet => {
+                                    return [
+                                        dataSet.categoryCombo.id,
+                                        dataSet.categoryCombo
+                                    ]
+                                }));
+                            this.setState({ categoryCombos: categoryCombos })
+                        }
+                    });
+            }
+        }
     },
 
     requestExpressionStatus() {

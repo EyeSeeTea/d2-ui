@@ -15,16 +15,14 @@ config.i18n.strings.add('please_select_a_dataset');
 const initialState = {
     categoryComboId: null,
     categoryComboOptionsSelected: {},
-    categoryComboItems: null,
-    categories: [],
-    categoryOptionComboItems: null,
-    selectionValid: true
+    categories: []
 }
 
 export default React.createClass({
 
     propTypes: {
         dataElementOperandId: React.PropTypes.string,
+        categoryCombos: React.PropTypes.object.isRequired,
         dataElementOperandSelectorAction: React.PropTypes.func.isRequired
     },
 
@@ -39,47 +37,25 @@ export default React.createClass({
     },
 
     componentWillReceiveProps(newProps) {
-        if (newProps.dataElementOperandId != undefined && newProps.dataElementOperandId != this.props.dataElementOperandId) {
+        if (newProps.categoryCombos != undefined && newProps.categoryCombos != this.props.categoryCombos) {
             this.setState(initialState);
-
-            this.context.d2.models.dataElements.get(newProps.dataElementOperandId, { paging: false, fields: 'id, dataSets[id, categoryCombo[id,displayName, categories[id,displayName,categoryOptions[id,displayName]],categoryOptionCombos[id,categoryOptions]]]' })
-                .then(dataElement => dataElement.dataSets.toArray())
-                .then(dataSets => {
-
-                    const categoryComboItems =
-                        new Map(dataSets.map(dataSet => {
-                            return [dataSet.categoryCombo.id, //{
-                                // name: dataSet.categoryCombo.displayName,
-                                // categories: dataSet.categoryCombo.categories
-                                dataSet.categoryCombo
-                            //}
-                            ]
-                        }));
-                    this.setState({ categoryComboItems: categoryComboItems })
-
-                    const categoryOptionComboItems =
-                        new Map(dataSets.map(dataSet => {
-                            return [dataSet.categoryCombo.id, dataSet.categoryCombo.categoryOptionCombos]
-                        }));
-                    this.setState({ categoryOptionComboItems: categoryOptionComboItems })
-
-                });
         }
     },
 
     loadCategoryOptions(event) {
-        this.setState({ categoryComboId: event.target.value })
-        var categoryCombo = this.state.categoryComboItems.get(event.target.value)
-        this.setState({ categories: categoryCombo.categories })
-        this.setState({ categoryComboOptionsSelected: {} })
-        this.setState({ selectionValid : false})
+        
+        var categoryCombo = this.props.categoryCombos.get(event.target.value)
+        this.setState({ 
+            categoryComboId: event.target.value,
+            categories: categoryCombo.categories,
+            categoryComboOptionsSelected: {}
+         })
     },
 
     handleChangeSelection(category, event) {
         var newState = this.state.categoryComboOptionsSelected;
         newState[category.id] = event.target.value;
         this.setState({ categoryComboOptionsSelected: newState });
-        this.setState({ selectionValid : (Object.values(newState).length == this.state.categories.length)});
     },
 
     renderSelectFields() {
@@ -101,7 +77,7 @@ export default React.createClass({
     addOperatorToFormula(event) {
 
         if (this.state.categoryComboId) {
-            var categoryOptionComboItems = this.state.categoryOptionComboItems.get(this.state.categoryComboId)
+            var categoryOptionComboItems = this.props.categoryCombos.get(this.state.categoryComboId).categoryOptionCombos;
 
             var categoryComboOptionsSelectedValue = Object.values(this.state.categoryComboOptionsSelected)
             for (var categoryOptionComboItemIndex in categoryOptionComboItems) {
@@ -123,20 +99,24 @@ export default React.createClass({
         }
     },
 
+    isSelectionValid() {
+        return (!this.state.categoryComboId || (Object.values(this.state.categoryComboOptionsSelected).length == this.state.categories.length));
+    },
+
     render() {
         return (
             <DrawerPanel embedded={true} width={'50%'} title="Dataset Attribute Combination">
-                <div style={{padding: '0.5rem'}}>
+                <div style={{ padding: '0.5rem' }}>
                     <DropDown
                         value={this.state.categoryComboId}
-                        menuItems={this.state.categoryComboItems ? Array.from(this.state.categoryComboItems.values()): []}
+                        menuItems={this.props.categoryCombos ? Array.from(this.props.categoryCombos.values()) : []}
                         onChange={this.loadCategoryOptions}
                         floatingLabelText="Choose Category Combo"
                         />
 
                     {this.state.categories ? this.renderSelectFields() : null}
 
-                    <FlatButton label="Add Operator" style={{margin: '1rem 0rem'}} onTouchTap={this.addOperatorToFormula} disabled={!this.state.selectionValid} />
+                    <FlatButton label="Add Operator" style={{ margin: '1rem 0rem' }} onTouchTap={this.addOperatorToFormula} disabled={!this.isSelectionValid()} />
                 </div>
             </DrawerPanel>
         );
