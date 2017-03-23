@@ -19,8 +19,8 @@ describe('LoadingMask', () => {
         expect(loadingMask.props().mode).to.equal('indeterminate');
     });
 
-    it('should pass the default size of 1.5 if no size was provided', () => {
-        expect(loadingMask.props().size).to.equal(1.5);
+    it('should pass the default size of 90 if no size was provided', () => {
+        expect(loadingMask.props().size).to.equal(90);
     });
 
     it('should pass the default style options if no style was provided', () => {

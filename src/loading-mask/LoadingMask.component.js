@@ -10,10 +10,14 @@ export default React.createClass({
     getDefaultProps() {
         return {
             style: {},
-            size: 1.5,
+            size: 90,
         };
     },
 
+    childContextTypes: {
+        muiTheme: React.PropTypes.object.isRequired
+    },
+    
     render() {
         const loadingStatusMask = {
             left: '45%',
