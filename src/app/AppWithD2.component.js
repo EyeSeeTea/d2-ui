@@ -1,6 +1,9 @@
 import React from 'react';
 import log from 'loglevel';
 
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
+
 export default React.createClass({
     propTypes: {
         children: React.PropTypes.element,
@@ -11,11 +14,13 @@ export default React.createClass({
 
     childContextTypes: {
         d2: React.PropTypes.object,
+        muiTheme: React.PropTypes.object.isRequired
     },
 
     getChildContext() {
         return {
             d2: this.state.d2,
+            muiTheme: this.props.muiTheme || getMuiTheme()
         };
     },
 
@@ -41,9 +46,11 @@ export default React.createClass({
         };
 
         return (
-            <div>
-                {getChildren()}
-            </div>
+            <MuiThemeProvider>
+                <div>
+                    {getChildren()}
+                </div>
+            </MuiThemeProvider>
         );
     },
 });
