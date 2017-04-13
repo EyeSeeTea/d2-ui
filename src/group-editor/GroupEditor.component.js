@@ -185,7 +185,7 @@ export default React.createClass({
             container: {
                 display: 'flex',
                 marginTop: 16,
-                marginBottom: 32,
+                marginBottom: 64,
                 height: `${this.props.height}px`,
             },
             left: {
