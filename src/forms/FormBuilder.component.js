@@ -18,6 +18,11 @@ class FormBuilder extends React.Component {
         this.getStateClone = this.getStateClone.bind(this);
     }
 
+    /**
+     * Run sync validation when props.validateOnRender is enabled.
+     *
+     * @param props
+     */
     runValidation(props) {
         if (!props.validateOnRender) {
             return false;
@@ -54,8 +59,6 @@ class FormBuilder extends React.Component {
      * @param props
      */
     componentWillReceiveProps(props) {
-        // If this.prop.validateOnRender is set, this method will run a full (sync/async)
-        // validation. Otherwise, run only sync validators for changed values in state.
         if (this.runValidation(props)) {
             return;
         }
