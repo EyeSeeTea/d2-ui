@@ -185,7 +185,7 @@ export default React.createClass({
             container: {
                 display: 'flex',
                 marginTop: 16,
-                marginBottom: 32,
+                marginBottom: 64,
                 height: `${this.props.height}px`,
             },
             left: {
@@ -307,7 +307,7 @@ export default React.createClass({
                         disabled={this.state.loading || this.state.selectedRight === 0} />
                     <div style={styles.status}>
                         {this.state.loading ?
-                            <CircularProgress size={0.5} style={{ width: 60, height: 60 }} /> : undefined }
+                            <CircularProgress size={29.75} style={{ width: 60, height: 60 }} /> : undefined }
                     </div>
                 </div>
                 <div style={styles.right}>

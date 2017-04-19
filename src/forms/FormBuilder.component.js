@@ -18,6 +18,37 @@ class FormBuilder extends React.Component {
         this.getStateClone = this.getStateClone.bind(this);
     }
 
+    /**
+     * Run sync validation when props.validateOnRender is enabled.
+     *
+     * @param props
+     */
+    runValidation(props) {
+        if (!props.validateOnRender) {
+            return false;
+        }
+
+        const stateClone = this.getStateClone();
+        const isValid = props.fields.reduce((accIsValid, field) => {
+            const fieldName = field.name;
+
+            // Cancel async validators in progress (if any)
+            if (this.asyncValidators[fieldName]) {
+                this.cancelAsyncValidators(fieldName);
+                this.setState(this.updateFieldState(stateClone, fieldName, {validating: false}));
+            }
+
+            // Run synchronous validators
+            const validatorResult = this.validateField(stateClone, fieldName, field.value);
+            return accIsValid && validatorResult === true;
+        }, true);
+
+        stateClone.form.valid = isValid;
+        stateClone.form.validating = false;
+        props.onUpdateFormStatus(stateClone.form);
+        this.setState(stateClone);
+        return true;
+    }
 
     /**
      * Called by React when the component receives new props, but not on the initial render.
@@ -28,6 +59,9 @@ class FormBuilder extends React.Component {
      * @param props
      */
     componentWillReceiveProps(props) {
+        if (this.runValidation(props)) {
+            return;
+        }
         this.asyncValidators = this.createAsyncValidators(props);
 
         const clonedState = this.getStateClone();
@@ -90,12 +124,12 @@ class FormBuilder extends React.Component {
         };
 
         return this.props.fields.map(field => {
-            const {errorTextProp, ...props} = field.props || {};
+            const {errorTextProp, changeEvent, ...props} = field.props || {};
             const fieldState = this.state.fields[field.name] || {};
 
             const changeHandler = this.handleFieldChange.bind(this, field.name);
 
-            const onBlurChangeHandler = props.changeEvent === 'onBlur' ?
+            const onBlurChangeHandler = changeEvent === 'onBlur' ?
                 (e) => {
                     const stateClone = this.updateFieldState(this.getStateClone(), field.name, {value: e.target.value});
                     this.validateField(stateClone, field.name, e.target.value);
@@ -110,12 +144,12 @@ class FormBuilder extends React.Component {
             return (
                 <div key={field.name} style={Object.assign({}, styles.field, this.props.fieldWrapStyle)}>
                     {fieldState.validating ? (
-                        <CircularProgres mode="indeterminate" size={0.33} style={styles.progress}/>
+                        <CircularProgres mode="indeterminate" size={20} style={styles.progress}/>
                     ) : undefined}
                     <field.component
                         value={fieldState.value}
-                        onChange={props.changeEvent && props.changeEvent === 'onBlur' ? onBlurChangeHandler : changeHandler}
-                        onBlur={props.changeEvent && props.changeEvent === 'onBlur' ? changeHandler : undefined}
+                        onChange={changeEvent && changeEvent === 'onBlur' ? onBlurChangeHandler : changeHandler}
+                        onBlur={changeEvent && changeEvent === 'onBlur' ? changeHandler : undefined}
                         errorStyle={fieldState.validating ? styles.validatingErrorStyle : undefined}
                         errorText={fieldState.valid ? errorText : fieldState.error}
                         {...props} />
@@ -431,6 +465,7 @@ FormBuilder.propTypes = {
     onUpdateFormStatus: React.PropTypes.func,
     style: React.PropTypes.object,
     fieldWrapStyle: React.PropTypes.object,
+    validateOnRender: React.PropTypes.bool,
 };
 
 
