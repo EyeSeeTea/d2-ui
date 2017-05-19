@@ -15,6 +15,7 @@ const DataTableHeader = React.createClass({
         sortable: React.PropTypes.bool,
         sorting: React.PropTypes.oneOf(['asc', 'desc']),
         onSortingToggle: React.PropTypes.func,
+        style: React.PropTypes.object,
     },
 
     mixins: [Translate],
@@ -27,6 +28,7 @@ const DataTableHeader = React.createClass({
             contents: null,
             sortable: false,
             sorting: null,
+            style: {},
         };
     },
 
@@ -45,7 +47,8 @@ const DataTableHeader = React.createClass({
     },
 
     render() {
-        const {isOdd, sortable, name, text, contents} = this.props;
+        const {isOdd, sortable, name, text, contents, style} = this.props;
+        const styleWithSorting = sortable ? {cursor: "pointer", ...style} : style;
         const classList = classes(
             'data-table__headers__header',
             {
@@ -56,8 +59,9 @@ const DataTableHeader = React.createClass({
 
         return (
             <div 
-                className={classList} 
-                {...(sortable ? {onClick: this.props.onSortingToggle, style: {cursor: "pointer"}} : {})}
+                className={classList}
+                style={styleWithSorting}
+                {...(sortable ? {onClick: this.props.onSortingToggle} : {})}
             >
                 {contents}
                 {isString(text) ? text : (name ? this.getTranslation(camelCaseToUnderscores(name)) : null)}
