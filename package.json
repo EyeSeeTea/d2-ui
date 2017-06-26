@@ -14,6 +14,7 @@
     "preversion": "npm run validate && npm test",
     "build": "npm run build-only",
     "build-only": "rm -rf lib/ && babel src --out-dir lib && compass compile && npm run build-stand-alone-header-bar",
+    "postinstall": "rm -rf lib/ && babel src --out-dir lib && compass compile",
     "prebuild-stand-alone-header-bar": "rm -rf dist &>/dev/null || true",
     "build-stand-alone-header-bar": "webpack -p && cp -r ./examples/external-header-bar/index.html dist",
     "validate": "npm ls --depth 0 || yarn list"
@@ -25,6 +26,8 @@
   "license": "BSD-3-Clause",
   "peerDependencies": {
     "material-ui": "0.17",
+    "d3-color": "1.0.2",
+    "webpack-visualizer-plugin": "^0.1.5",
     "rxjs": "^5.2.0"
   },
   "devDependencies": {
