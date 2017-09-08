@@ -5,7 +5,7 @@ require('colors');
 const Visualizer = require('webpack-visualizer-plugin');
 
 const dhisConfigPath = process.env.DHIS2_HOME && `${process.env.DHIS2_HOME}/config`;
-let dhisConfig;
+var dhisConfig;
 
 try {
     dhisConfig = require(dhisConfigPath);
