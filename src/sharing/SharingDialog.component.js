@@ -1,6 +1,7 @@
 import { config } from 'd2/lib/d2';
 import Dialog from 'material-ui/Dialog/Dialog';
 import FlatButton from 'material-ui/FlatButton/FlatButton';
+import IconButton from 'material-ui/IconButton';
 import React, { PropTypes, createClass } from 'react';
 import Translate from '../i18n/Translate.mixin';
 import Sharing from './Sharing.component';
@@ -11,7 +12,7 @@ config.i18n.strings.add('sharing_settings');
 
 export default createClass({
     propTypes: {
-        objectToShare: PropTypes.object.isRequired,
+        objectsToShare: PropTypes.arrayOf(PropTypes.object).isRequired,
         onRequestClose: PropTypes.func.isRequired,
     },
 
@@ -24,16 +25,30 @@ export default createClass({
                 onClick={this.closeSharingDialog} />,
         ];
 
+        const title = (
+            <div>
+                <span>{this.getTranslation('sharing_settings')}</span>
+                {this.props.objectsToShare && this.props.objectsToShare.length > 1 ?
+                    <IconButton
+                        tooltip={this.getTranslation('sharing_settings_help')}
+                        tooltipPosition="bottom-center"
+                        iconClassName="material-icons"
+                        >
+                        help_outline
+                    </IconButton> : null}
+            </div>
+        );
+
         return (
             <Dialog
-                title={this.getTranslation('sharing_settings')}
+                title={title}
                 actions={sharingDialogActions}
                 autoDetectWindowHeight
                 autoScrollBodyContent
                 {...this.props}
                 onRequestClose={this.closeSharingDialog}
             >
-                <Sharing objectToShare={this.props.objectToShare} />
+                <Sharing objectsToShare={this.props.objectsToShare} />
             </Dialog>
         );
     },
