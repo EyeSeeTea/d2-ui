@@ -55,7 +55,7 @@ export default createClass({
         }, this.props.style);
 
         return (
-            <div style={style} classnName="sharing--access-mask-switches">
+            <div style={style} className="sharing--access-mask-switches">
                 <div>{this.props.label}</div>
                 <ClearFix>
                 <Toggle
