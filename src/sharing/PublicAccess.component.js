@@ -1,4 +1,4 @@
-import { createClass, default as React } from 'react';
+import { createClass, PropTypes, default as React } from 'react';
 import Translate from '../i18n/Translate.mixin';
 import AccessMaskSwitches from './AccessMaskSwitches.component';
 import { config } from 'd2/lib/d2';
@@ -6,7 +6,11 @@ import { config } from 'd2/lib/d2';
 config.i18n.strings.add('public_access');
 
 export default createClass({
-    propTypes: Object.assign({}, AccessMaskSwitches.propTypes),
+    propTypes: {
+        publicAccess: AccessMaskSwitches.propTypes.accessMask,
+        onChange: PropTypes.func.isRequired,
+        disabled: PropTypes.bool,
+    },
 
     mixins: [Translate],
 

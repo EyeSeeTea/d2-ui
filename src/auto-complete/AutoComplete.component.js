@@ -148,7 +148,18 @@ const AutoComplete = createClass({
     },
 
     render() {
-        const {actions, forType, ...other} = this.props;
+        const {
+            actions,
+            forType,
+            filterForSuggestions,
+            onSuggestionClicked,
+            debounceTime,
+            propertyToSearchBy,
+            scheduler,
+            closeOnItemClicked,
+            clearValueOnItemClicked,
+            ...other,
+        } = this.props;
 
         return (
             <div style={{position: 'relative'}} onClick={event => event.stopPropagation()}>

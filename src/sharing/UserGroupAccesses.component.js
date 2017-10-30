@@ -35,6 +35,7 @@ export default createClass({
                 {this.props.userGroupAccesses.map(item => {
                     return (
                         <AccessMaskSwitches
+                            key={item.id}
                             accessMask={item.access}
                             name={item.name}
                             label={item.name}

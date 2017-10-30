@@ -7,7 +7,7 @@ config.i18n.strings.add('external_access');
 
 export default createClass({
     propTypes: {
-        externalAccess: PropTypes.string.isRequired,
+        externalAccess: PropTypes.bool.isRequired,
         disabled: PropTypes.bool,
         onChange: PropTypes.func.isRequired,
     },
