@@ -5,8 +5,8 @@ const Translate = {
         d2: React.PropTypes.object.isRequired,
     },
 
-    getTranslation(key) {
-        return this.context.d2.i18n.getTranslation(key);
+    getTranslation(...args) {
+        return this.context.d2.i18n.getTranslation(...args);
     },
 };
 
