@@ -51,7 +51,6 @@ actions.selectionChanged.subscribe(({data: {orgUnits, strategy}}) => {
     };
     const newObjects = objects.map(changeSelection);
     orgUnitsStore.setState({objects: newObjects});
-    actions.save();
 });
 
 actions.save.subscribe(action => {
