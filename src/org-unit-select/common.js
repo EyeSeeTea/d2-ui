@@ -23,7 +23,7 @@ function addToSelection(orgUnits) {
     const addedOus = orgUnitArray
         .filter(ou => !this.props.selected.includes(ou.path));
 
-    this.props.onUpdateSelection(this.props.selected.concat(addedOus.map(ou => ou.path)));
+    this.props.onUpdateSelection(this.props.selected.concat(addedOus.map(ou => ou.path)), orgUnitArray);
 }
 
 function removeFromSelection(orgUnits) {
