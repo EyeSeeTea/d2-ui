@@ -1,6 +1,7 @@
 import Action from '../action/Action';
 import orgUnitsStore from './orgUnits.store';
 import { getInstance as getD2 } from 'd2/lib/d2';
+import { getOwnedPropertyJSON } from 'd2/lib/model/helpers/json';
 
 const actions = Action.createActionsFromNames([
     'load',
@@ -15,7 +16,7 @@ actions.load.subscribe(({data: objects, complete, error}) => {
             return d2.models[objectType].list({
                 paging: false,
                 filter: `id:in:[${objects.map(obj => obj.id)}]`,
-                fields: "id,name,periodType,displayName,organisationUnits[*]"
+                fields: "*,organisationUnits[*]"
             }).then(collection => collection.toArray());
         })
         .then(objectsWithOrgUnitsInfo => {
@@ -51,27 +52,26 @@ actions.selectionChanged.subscribe(({data: {orgUnits, strategy}}) => {
     };
     const newObjects = objects.map(changeSelection);
     orgUnitsStore.setState({objects: newObjects});
-    actions.save();
 });
 
 actions.save.subscribe(action => {
     return getD2().then(d2 => {
         const api = d2.Api.getApi();
         const {objects} = orgUnitsStore.getState();
-        const objectsPayload = objects.map(obj => ({
-            // Even on MERGE mode, these fields are required: name, periodType.
-            id: obj.id,
-            name: obj.name,
-            periodType: obj.periodType,
-            organisationUnits: obj.organisationUnits.toArray().map(ou => ({id: ou.id})),
-        }));
+
+        const objectsPayload = objects.map(obj =>
+            _.assign({}, getOwnedPropertyJSON(obj), {
+                organisationUnits: obj.organisationUnits.toArray().map(ou => ({id: ou.id}))
+            }));
         const objectPluralType = objects[0].modelDefinition.plural;
         const payload = {[objectPluralType]: objectsPayload};
 
         return api.post('metadata?strategy=UPDATE&mergeMode=MERGE', payload)
-            .then(({status}) => {
-                const fun = status === 'OK' ? action.complete : action.error;
-                fun();
+            .then((res) => {
+                if (res.status === 'OK')
+                    action.complete();
+                else
+                    action.error(JSON.stringify(res));
             })
             .catch(({message}) => {
                 action.error(message);

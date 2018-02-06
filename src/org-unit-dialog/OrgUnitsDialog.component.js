@@ -104,7 +104,10 @@ export default createClass({
         const {objects: propObjects, ...dialogProps} = this.props;
         const dialogActions = [
             <FlatButton
-                label={this.getTranslation('close')}
+                label={this.getTranslation('save')}
+                onClick={this.save} />,
+            <FlatButton
+                label={this.getTranslation('cancel')}
                 onClick={this.closeDialog} />,
         ];
 
@@ -120,6 +123,10 @@ export default createClass({
                 {this._renderInner()}
             </Dialog>
         );
+    },
+
+    save() {
+        orgUnitsActions.save().subscribe(this.closeDialog);
     },
 
     closeDialog() {
