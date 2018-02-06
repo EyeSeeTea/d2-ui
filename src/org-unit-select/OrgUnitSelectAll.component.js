@@ -49,7 +49,7 @@ class OrgUnitSelectAll extends React.Component {
         } else {
             this.setState({ loading: true });
 
-            this.context.d2.models.organisationUnits.list({ fields: 'id,path', paging: false })
+            this.context.d2.models.organisationUnits.list({ fields: 'id,path,displayName', paging: false })
                 .then(orgUnits => {
                     const ous = orgUnits.toArray().map(ou => ou.path);
                     this.setState({
@@ -71,7 +71,7 @@ class OrgUnitSelectAll extends React.Component {
             root: this.props.currentRoot.id,
             paging: false,
             includeDescendants: true,
-            fields: 'id,path',
+            fields: 'id,path,displayName',
         });
     }
 

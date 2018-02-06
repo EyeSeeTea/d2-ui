@@ -41,7 +41,7 @@ class OrgUnitSelectByLevel extends React.Component {
                 d2.models.organisationUnits.list({
                     paging: false,
                     level: level - rootLevel,
-                    fields: 'id,path',
+                    fields: 'id,path,displayName',
                     root: this.props.currentRoot.id,
                 })
                     .then(orgUnits => orgUnits.toArray())
@@ -59,7 +59,7 @@ class OrgUnitSelectByLevel extends React.Component {
                 log.debug(`Loading org units for level ${level}`);
                 this.setState({ loading: true });
 
-                d2.models.organisationUnits.list({ paging: false, level, fields: 'id,path' })
+                d2.models.organisationUnits.list({ paging: false, level, fields: 'id,path,displayName' })
                     .then(orgUnits => orgUnits.toArray())
                     .then(orgUnitArray => {
                         log.debug(`Loaded ${orgUnitArray.length} org units for level ${level}`);

@@ -37,7 +37,7 @@ class OrgUnitSelectByGroup extends React.Component {
                     root: this.props.currentRoot.id,
                     paging: false,
                     includeDescendants: true,
-                    fields: 'id,path',
+                    fields: 'id,path,displayName',
                     filter: `organisationUnitGroups.id:eq:${groupId}`,
                 })
                     .then(orgUnits => orgUnits.toArray())
@@ -54,7 +54,7 @@ class OrgUnitSelectByGroup extends React.Component {
                 this.setState({ loading: true });
 
                 const d2 = this.context.d2;
-                d2.models.organisationUnitGroups.get(groupId, { fields: 'organisationUnits[id,path]' })
+                d2.models.organisationUnitGroups.get(groupId, { fields: 'organisationUnits[id,path,displayName]' })
                     .then(orgUnitGroups => orgUnitGroups.organisationUnits.toArray())
                     .then(orgUnits => {
                         log.debug(`Loaded ${orgUnits.length} org units for group ${groupId}`);

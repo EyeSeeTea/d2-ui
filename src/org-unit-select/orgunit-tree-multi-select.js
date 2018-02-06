@@ -222,23 +222,28 @@ export default class OrganisationUnitTreeMultiSelect extends React.Component {
         );
     }
 
-    _setSelection(selectedOrgUnitPaths) {
+    _setSelection(selectedOrgUnitPaths, newOrgUnits = []) {
         const d2 = this.context.d2;
-        const getId = path => path.substr(path.lastIndexOf('/') + 1);
         const modelOrgUnits = this.props.model.organisationUnits;
         const assigned = modelOrgUnits.toArray().map(ou => ou.path);
+        const newOrgUnitsNamesById = _(newOrgUnits).map(ou => [ou.id, ou.displayName]).fromPairs().value();
+        const createOrgUnit = path => {
+            const id = path.substr(path.lastIndexOf('/') + 1);
+            const displayName = newOrgUnitsNamesById[id];
+            return d2.models.organisationUnits.create({ id, path, displayName });
+        };
 
         const additions = selectedOrgUnitPaths
             // Filter out already assigned ids
             .filter(path => !assigned.includes(path))
             // Add the rest
-            .map(path => d2.models.organisationUnits.create({ id: getId(path), path }));
+            .map(createOrgUnit);
 
         const deletions = assigned
             // Filter out ids that should be left in
             .filter(path => !selectedOrgUnitPaths.includes(path))
             // Add the rest
-            .map(path => d2.models.organisationUnits.create({ id: getId(path), path }));
+            .map(createOrgUnit);
 
         additions.forEach(ou => {
             modelOrgUnits.add(ou);
