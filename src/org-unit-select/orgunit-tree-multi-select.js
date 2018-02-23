@@ -35,6 +35,8 @@ export default class OrganisationUnitTreeMultiSelect extends React.Component {
             return plural;
         };
 
+        const {levels: levelsFilter, groups: groupsFilter} = this.props.filters || {};
+
         Promise.all([
             d2.currentUser.getOrganisationUnits({
                 memberCollection: overlyComplicatedTemporaryFixForWeirdlyNamedFields(this.props.modelDefinition.plural),
@@ -45,10 +47,12 @@ export default class OrganisationUnitTreeMultiSelect extends React.Component {
                 paging: false,
                 fields: 'id,level,displayName',
                 order: 'level:asc',
+                filter: levelsFilter,
             }),
             d2.models.organisationUnitGroups.list({
                 paging: false,
                 fields: 'id,displayName',
+                filter: groupsFilter,
             }),
         ])
             .then(([
@@ -281,6 +285,10 @@ OrganisationUnitTreeMultiSelect.contextTypes = {
 };
 OrganisationUnitTreeMultiSelect.propTypes = {
     value: React.PropTypes.object,
+    filters: React.PropTypes.shape({
+        levels: React.PropTypes.string,
+        groups: React.PropTypes.string,
+    }),
 };
 OrganisationUnitTreeMultiSelect.defaultProps = {
     value: [],
