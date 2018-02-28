@@ -24,6 +24,7 @@ export default createClass({
             name: PropTypes.string.isRequired,
             user: PropTypes.object.isRequired,
         })).isRequired,
+        onError: PropTypes.func,
     },
 
     contextTypes: {
@@ -40,6 +41,7 @@ export default createClass({
     componentWillMount() {
         sharingActions.loadObjectSharingState(this.props.objectsToShare)
             .subscribe(noop, (error) => {
+                this.props.onError && this.props.onError(error);
                 log.error(error.message);
             });
 
