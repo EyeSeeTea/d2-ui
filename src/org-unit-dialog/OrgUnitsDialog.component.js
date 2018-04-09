@@ -14,6 +14,8 @@ export default createClass({
     propTypes: {
         objects: PropTypes.arrayOf(PropTypes.object).isRequired,
         onRequestClose: PropTypes.func.isRequired,
+        onSave: PropTypes.func,
+        ...Dialog.propTypes,
     },
 
     mixins: [Translate],
@@ -101,7 +103,7 @@ export default createClass({
     },
 
     render() {
-        const {objects: propObjects, ...dialogProps} = this.props;
+        const {objects, onRequestClose, onSave, ...dialogProps} = this.props;
         const dialogActions = [
             <FlatButton
                 label={this.getTranslation('save')}
@@ -117,8 +119,8 @@ export default createClass({
                 actions={dialogActions}
                 autoDetectWindowHeight
                 autoScrollBodyContent
-                {...dialogProps}
                 onRequestClose={this.closeDialog}
+                {...dialogProps}
             >
                 {this._renderInner()}
             </Dialog>
@@ -126,7 +128,16 @@ export default createClass({
     },
 
     save() {
-        orgUnitsActions.save().subscribe(this.closeDialog);
+        orgUnitsActions.save().subscribe(() => {
+            this.closeDialog();
+            this.onSave();
+        });
+    },
+
+    onSave() {
+        if (this.props.onSave) {
+            this.props.onSave(this.props.objects);
+        }
     },
 
     closeDialog() {
