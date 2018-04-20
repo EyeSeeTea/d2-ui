@@ -4,6 +4,7 @@ import OrgUnitSelectByLevel from './OrgUnitSelectByLevel.component';
 import OrgUnitSelectByGroup from './OrgUnitSelectByGroup.component';
 import OrgUnitSelectAll from './OrgUnitSelectAll.component';
 import TextField from 'material-ui/TextField/TextField';
+import RaisedButton from 'material-ui/FlatButton/FlatButton';
 import Action from '../action/Action';
 import { Observable } from 'rx';
 import { config } from 'd2/lib/d2';
@@ -22,6 +23,8 @@ export default class OrganisationUnitTreeMultiSelect extends React.Component {
 
         this._handleClick = this._handleClick.bind(this);
         this._setSelection = this._setSelection.bind(this);
+        this._selectAll = this._selectAll.bind(this);
+        this._deselectAll = this._deselectAll.bind(this);
     }
 
     componentDidMount() {
@@ -139,6 +142,22 @@ export default class OrganisationUnitTreeMultiSelect extends React.Component {
         );
     }
 
+    _selectAll() {
+        const userOus$ = this.context.d2.models.organisationUnit.list({
+            fields: "id,path",
+            withinUserHierarchy: true,
+            paging: false,
+        });
+        userOus$.then(userOus => {
+            const selectedPaths = userOus.toArray().map(ou => ou.path);
+            this.setState({selectedOrgUnits: selectedPaths});
+        });
+    }
+
+    _deselectAll() {
+        this.setState({selectedOrgUnits: []});
+    }
+
     render() {
         if (!this.state.rootOrgUnits) {
             return (<div>this.context.d2.i18n.getTranslation('determining_your_root_orgunits')</div>);
@@ -179,6 +198,7 @@ export default class OrganisationUnitTreeMultiSelect extends React.Component {
             padding: 2,
             margin: 4,
         };
+        const getTranslation = this.context.d2.i18n.getTranslation.bind(this.context.d2.i18n);
 
         return (
             <div style={{ position: 'relative', minWidth: 850 }}>
@@ -187,7 +207,18 @@ export default class OrganisationUnitTreeMultiSelect extends React.Component {
                     floatingLabelText={this.context.d2.i18n.getTranslation('filter_organisation_units_by_name')}
                     fullWidth
                 />
-                <div className="organisation-unit-tree__selected">{this.state.selectedOrgUnits.length} {this.context.d2.i18n.getTranslation('organisation_units_selected')}</div>
+                <div className="organisation-unit-tree__selected">
+                    <div>
+                        {this.state.selectedOrgUnits.length} 
+                        &nbsp;
+                        {this.context.d2.i18n.getTranslation('organisation_units_selected')}
+                    </div>
+
+                    <div>
+                        <RaisedButton onClick={this._selectAll} label={getTranslation('select_all')} />
+                        <RaisedButton onClick={this._deselectAll} label={getTranslation('deselect_all')} />
+                    </div>
+                </div>
                 {this.renderRoots()}
                 {this.state.orgUnitGroups && this.state.orgUnitLevels && (
                     <div style={controlStyles}>
