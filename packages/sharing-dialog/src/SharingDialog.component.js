@@ -164,7 +164,7 @@ class SharingDialog extends React.Component {
                         autoDetectWindowHeight
                         autoScrollBodyContent
                         open={this.props.open}
-                        title={this.props.d2.i18n.getTranslation('share')}
+                        title={this.props.d2.i18n.getTranslation('share') + "my1"}
                         actions={sharingDialogActions}
                         onRequestClose={this.closeSharingDialog}
                         {...this.props}
