@@ -4,6 +4,7 @@ import CommentTextarea from './CommentTextarea';
 import { userCanManage } from '../../util/auth';
 import { FormattedRelative } from 'react-intl';
 import PropTypes from 'prop-types';
+import CommentModel from '../../models/comment';
 import { config } from 'd2/lib/d2';
 
 config.i18n.strings.add('edit');
@@ -34,7 +35,7 @@ const Comment = ({ d2, comment, showActions, onEdit, onDelete }) => (
 export default class InterpretationComments extends React.Component {
     static propTypes = {
         d2: PropTypes.object.isRequired,
-        comments: PropTypes.arrayOf(PropTypes.object).isRequired,
+        interpretation: PropTypes.object.isRequired,
         onSave: PropTypes.func.isRequired,
         onDelete: PropTypes.func.isRequired,
     };
@@ -42,6 +43,10 @@ export default class InterpretationComments extends React.Component {
     state = {
         commentToEdit: null,
     };
+
+    constructor(props) {
+        super(props);
+    }
 
     _onEdit(comment) {
         this.setState({ commentToEdit: comment });
@@ -57,19 +62,21 @@ export default class InterpretationComments extends React.Component {
         }
     }
 
-    _onSave(comment) {
-        this.setState({ commentToEdit: null });
+    _onSave(comment, text) {
+        comment.text = text;
         this.props.onSave(comment);
+        this.setState({ commentToEdit: null });
     }
 
     render() {
-        const { d2, comments } = this.props;
+        const { d2, interpretation } = this.props;
         const { commentToEdit } = this.state;
+        const comments = interpretation.comments;
 
         return (
             <div>
                 <WithAvatar user={d2.currentUser}>
-                    <CommentTextarea comment={{text: ""}} onPost={text => this._onSave({text})} />
+                    <CommentTextarea comment={{text: ""}} onPost={text => this._onSave(new CommentModel(interpretation), text)} />
                 </WithAvatar>
 
                 {comments.map(comment =>
@@ -82,7 +89,7 @@ export default class InterpretationComments extends React.Component {
                             ?
                                 <CommentTextarea
                                     comment={comment}
-                                    onPost={text => this._onSave({...comment, text})}
+                                    onPost={text => this._onSave(comment, text)}
                                     onCancel={() => this._onCancelEdit()}
                                 />
                             :

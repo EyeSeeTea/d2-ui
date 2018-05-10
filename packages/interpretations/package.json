@@ -16,7 +16,6 @@
   "author": "Arnau Sanchez <arnau@eyeseetea.com>",
   "contributors": [],
   "scripts": {
-    "_prebuild": "rimraf ./build/*",
     "build": "npm run build:commonjs && npm run build:es",
     "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir build/cjs --ignore spec.js",
     "build:es": "cross-env BABEL_ENV=es babel src --out-dir build/es --ignore spec.js",

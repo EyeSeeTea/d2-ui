@@ -23,11 +23,19 @@ class InterpretationDialog extends Component {
     constructor(props) {
         super(props);
         this.state = { value: props.interpretation ? props.interpretation.text : "" };
+        this.save = this.save.bind(this);
+    }
+
+    save() {
+        const { interpretation, model, onSave } = this.props;
+        const { value } = this.state;
+        interpretation.text = value;
+        onSave(interpretation);
     }
 
     render() {
         const { d2 } = this.context;
-        const { interpretation, favoriteId, onSave, onClose } = this.props;
+        const { interpretation, onSave, onClose } = this.props;
         const { value } = this.state;
         const title = interpretation && interpretation.id
             ? d2.i18n.getTranslation('edit_interpretation')
@@ -45,7 +53,7 @@ class InterpretationDialog extends Component {
                     <Button
                         color="primary"
                         disabled={value ? false : true}
-                        onClick={() => onSave({ ...interpretation, text: value })}
+                        onClick={this.save}
                     >
                         {d2.i18n.getTranslation('save')}
                     </Button>,
@@ -64,6 +72,13 @@ class InterpretationDialog extends Component {
         );
     }
 }
+
+InterpretationDialog.propTypes = {
+    model: PropTypes.object.isRequired,
+    interpretation: PropTypes.object.isRequired,
+    onSave: PropTypes.func.isRequired,
+    onClose: PropTypes.func.isRequired,
+};
 
 InterpretationDialog.contextTypes = {
     d2: PropTypes.object.isRequired,

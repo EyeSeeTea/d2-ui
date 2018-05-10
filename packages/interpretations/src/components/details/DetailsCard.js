@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { Card, CardHeader, CardText } from 'material-ui/Card';
 import Divider from 'material-ui/Divider';
 import IconButton from 'material-ui/IconButton';
@@ -12,14 +11,7 @@ import pick from 'lodash/fp/pick';
 import SharingDialog from '@dhis2/d2-ui-sharing-dialog';
 import DetailsDialog from '../favorites/DetailsDialog';
 import { config } from 'd2/lib/d2';
-
-import {
-    toggleDetailsExpand,
-    openSharingDialog,
-    closeSharingDialog,
-    openDetailsDialog,
-    closeDetailsDialog,
-} from '../../actions/details';
+window.config = config;
 
 //import './DetailsCard.css';
 
@@ -54,21 +46,23 @@ const styles = {
     },
 };
 
-const List = ({children}) =>
-    <div className="DetailsCard-list">{children}</div>;
+const List = ({children}) => (
+    <div className="DetailsCard-list">{children}</div>
+);
 
-const ListItem = ({label, children}) => (
+const ListItem = ({label, text, children}) => (
     <div>
         {label && <label style={{fontWeight: "bold", marginRight: 5}}>{label}:</label>}
+        {text}
         {children}
     </div>
 );
 
 const EditButton = props => {
-    const { map, tooltip, icon, onClick } = props;
+    const { model, tooltip, icon, onClick } = props;
     const iconStyle = { width: 14, height: 14, padding: 0, marginLeft: 2 };
 
-    if (map && map.access && map.access.update) {
+    if (model && model.access && model.access.update) {
         return (
             <IconButton tooltip={tooltip} onClick={onClick} style={iconStyle} iconStyle={iconStyle}>
                 <SvgIcon icon={icon} color={grey600} />
@@ -81,8 +75,8 @@ const EditButton = props => {
 
 const descriptionMaxLength = 250;
 
-const getDescription = (d2, map) => {
-    const {description} = map;
+const getDescription = (d2, model) => {
+    const {description} = model;
 
     if (!description) {
         return (<i>{d2.i18n.getTranslation('no_description')}</i>)
@@ -93,8 +87,8 @@ const getDescription = (d2, map) => {
     }
 };
 
-const getOwner = map => {
-    return map.user ? map.user.displayName : '-';
+const getOwner = model => {
+    return model.user ? model.user.displayName : '-';
 };
 
 const accessMapping = {
@@ -103,144 +97,143 @@ const accessMapping = {
     "rw------": "read_write",
 };
 
-const getSharingText = (d2, map) => {
-    const publicAccessKey = accessMapping[map.publicAccess] || "unknown";
-    const publicAccess = d2.i18n.getTranslation('public') + ": " + d2.i18n.getTranslation("access_" + publicAccessKey);
+const getSharingText = (d2, model) => {
+    const publicAccessKey = accessMapping[model.publicAccess] || "unknown";
+    const publicAccess = d2.i18n.getTranslation('public') + ": " +
+        d2.i18n.getTranslation("access_" + publicAccessKey);
 
-    const userGroupsCount = _.size(map.userGroupAccesses);
+    const userGroupsCount = _.size(model.userGroupAccesses);
     const userGroupsInfo = userGroupsCount > 2
         ? `${userGroupsCount} ${d2.i18n.getTranslation('user_groups')}`
-        : (map.userGroupAccesses || []).map(userGroup => userGroup.displayName).join(", ");
+        : (model.userGroupAccesses || []).map(userGroup => userGroup.displayName).join(", ");
 
     return publicAccess + (userGroupsInfo ? ` + ${userGroupsInfo}` : "");
 };
 
-const DetailsCard = (props, context) => {
-    const {
-        map,
-        isExpanded,
-        toggleDetailsExpand,
-        isSharingDialogOpen,
-        openSharingDialog,
-        closeSharingDialog,
-        openDetailsDialog,
-        closeDetailsDialog,
-        isDetailsDialogOpen,
-        //saveFavorite, // TODO
-        onFavoriteChange,
-    } = props;
-
-    const saveDetailsAndCloseDialog = (map, newAttributes) => {
-        onFavoriteChange(newAttributes);
-        //saveFavorite(Object.keys(newAttributes));
-        closeDetailsDialog();
+class DetailsCard extends React.Component {
+    state = {
+        isExpanded: true,
+        isSharingDialogOpen: false,
+        isDetailsDialogOpen: false,
     };
 
-    const { d2 } = context;
+    notifyFavoriteChanges(model) {
+        if (this.props.onChange) {
+            this.props.onChange(model);
+        }
+    }
 
-    const updateMapAndCloseDialog = (map) => {
-        const newAttributes = pick(["publicAccess", "userGroupAccesses"], map);
-        onFavoriteChange(newAttributes);
-        closeSharingDialog();
-    };
+    saveDetailsAndCloseDialog(newModel) {
+        newModel.save().then(() => {
+            this.notifyFavoriteChanges(newModel);
+            this.closeDetailsDialog();
+        });
+    }
 
-    return (
-        <Card
-            className="DetailsCard"
-            containerStyle={styles.container}
-            expanded={isExpanded}
-            onExpandChange={toggleDetailsExpand}
-        >
-            <SharingDialog
-                open={isSharingDialogOpen}
-                type="map"
-                id={map.id}
-                onRequestClose={updateMapAndCloseDialog}
-                d2={d2}
-            />
+    updateModelAndCloseDialog(newAttributes) {
+        const newModel = this.props.model.clone();
+        Object.assign(newModel, newAttributes);
+        this.closeSharingDialog();
+        this.notifyFavoriteChanges(newModel);
+    }
 
-            <DetailsDialog
-                open={isDetailsDialogOpen}
-                favorite={map}
-                onSave={saveDetailsAndCloseDialog}
-                onClose={closeDetailsDialog}
-            />
+    toggleDetailsExpand() {
+        this.setState({isExpanded: true});
+    }
 
-            <CardHeader
-                className="DetailsCard-header"
-                title={d2.i18n.getTranslation('details')}
-                showExpandableButton={true}
-                textStyle={styles.headerText}
+    openDetailsDialog() {
+        this.setState({isDetailsDialogOpen: true});
+    }
+
+    closeDetailsDialog() {
+        this.setState({isDetailsDialogOpen: false});
+    }
+
+    openSharingDialog() {
+        this.setState({isSharingDialogOpen: true});
+    }
+
+    closeSharingDialog() {
+        this.setState({isSharingDialogOpen: false});
+    }
+
+    render() {
+        const { model } = this.props;
+        const { isExpanded, isSharingDialogOpen, isDetailsDialogOpen } = this.state;
+        const { d2 } = this.context;
+        const getTranslation = d2.i18n.getTranslation.bind(d2.i18n);
+
+        return (
+            <Card
+                className="DetailsCard"
+                containerStyle={styles.container}
+                expanded={isExpanded}
+                onExpandChange={this.toggleDetailsExpand.bind(this)}
             >
-            </CardHeader>
+                <SharingDialog
+                    open={isSharingDialogOpen}
+                    type={model.modelDefinition.name}
+                    id={model.id}
+                    onRequestClose={this.updateModelAndCloseDialog.bind(this)}
+                    d2={d2}
+                />
 
-            <CardText expandable={true} style={styles.body}>
-                <List>
-                    <ListItem>
-                        {getDescription(d2, map)}
-                        <EditButton icon="Create" map={map} tooltip="Edit details" onClick={openDetailsDialog} />
-                    </ListItem>
+                <DetailsDialog
+                    open={isDetailsDialogOpen}
+                    model={model}
+                    onSave={this.saveDetailsAndCloseDialog.bind(this)}
+                    onClose={this.closeDetailsDialog.bind(this)}
+                />
 
-                    <ListItem label={d2.i18n.getTranslation('owner')}>
-                        {getOwner(map)}
-                    </ListItem>
+                <CardHeader
+                    className="DetailsCard-header"
+                    title={getTranslation('details')}
+                    showExpandableButton={true}
+                    textStyle={styles.headerText}
+                >
+                </CardHeader>
 
-                    <ListItem label={d2.i18n.getTranslation('created')}>
-                        {getDateFromString(map.created)}
-                    </ListItem>
+                <CardText expandable={true} style={styles.body}>
+                    <List>
+                        <ListItem text={getDescription(d2, model)}>
+                            <EditButton
+                                icon="Create"
+                                model={model}
+                                tooltip={getTranslation('edit_details')}
+                                onClick={this.openDetailsDialog.bind(this)}
+                            />
+                        </ListItem>
 
-                    <ListItem label={d2.i18n.getTranslation('last_updated')}>
-                        {getDateFromString(map.lastUpdated)}
-                    </ListItem>
+                        <ListItem label={getTranslation('owner')} text={getOwner(model)} />
 
-                    <ListItem label={d2.i18n.getTranslation('views')}>
-                        {map.favoriteViews}
-                    </ListItem>
+                        <ListItem label={getTranslation('created')} text={getDateFromString(model.created)} />
 
-                    <ListItem label={d2.i18n.getTranslation('sharing')}>
-                        {getSharingText(d2, map)}
+                        <ListItem label={getTranslation('last_updated')} text={getDateFromString(model.lastUpdated)} />
 
-                        <EditButton icon="Group" map={map} tooltip={d2.i18n.getTranslation("edit_sharing")} onClick={openSharingDialog} />
-                    </ListItem>
-                </List>
-            </CardText>
-        </Card>
-    );
-};
+                        <ListItem label={getTranslation('views')} text={model.favoriteViews} />
+
+                        <ListItem label={getTranslation('sharing')} text={getSharingText(d2, model)}>
+                            <EditButton
+                                icon="Group"
+                                model={model}
+                                tooltip={getTranslation("edit_sharing")}
+                                onClick={this.openSharingDialog.bind(this)}
+                            />
+                        </ListItem>
+                    </List>
+                </CardText>
+            </Card>
+        );
+    }
+}
 
 DetailsCard.propTypes = {
-    map: PropTypes.object.isRequired,
-    isExpanded: PropTypes.bool,
-    toggleDetailsExpand: PropTypes.func.isRequired,
-    isSharingDialogOpen: PropTypes.bool.isRequired,
-    openSharingDialog: PropTypes.func.isRequired,
-    closeSharingDialog: PropTypes.func.isRequired,
-    openDetailsDialog: PropTypes.func.isRequired,
-    closeDetailsDialog: PropTypes.func.isRequired,
-    onFavoriteChange: PropTypes.func.isRequired,
-};
-
-DetailsCard.defaultProps = {
-    isExpanded: true,
-    isSharingDialogOpen: false,
-    isDetailsDialogOpen: false,
+    model: PropTypes.object.isRequired,
+    onChange: PropTypes.func,
 };
 
 DetailsCard.contextTypes = {
     d2: PropTypes.object.isRequired,
 };
 
-export default connect(
-    state => ({
-        isExpanded: state.details.isExpanded,
-        isSharingDialogOpen: state.details.isSharingDialogOpen,
-        isDetailsDialogOpen: state.details.isDetailsDialogOpen,
-    }),
-    {
-        toggleDetailsExpand,
-        openSharingDialog,
-        closeSharingDialog,
-        openDetailsDialog,
-        closeDetailsDialog,
-    },
-)(DetailsCard);
+export default DetailsCard;

@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { Card, CardHeader, CardText } from 'material-ui/Card';
 import Divider from 'material-ui/Divider';
 import Button from 'material-ui/FlatButton';
@@ -13,14 +12,8 @@ import size from 'lodash/fp/size';
 import InterpretationDialog from '../interpretation-dialog/InterpretationDialog';
 import { getDateFromString } from '../../util/dateUtils';
 import Interpretation from './Interpretation';
+import interpretationModel from '../../models/interpretation';
 //import './InterpretationsCard.css';
-import {
-    toggleExpand,
-    openInterpretationDialog,
-    closeInterpretationDialog,
-    saveInterpretation,
-    setCurrentInterpretation,
-} from '../../actions/interpretations';
 
 config.i18n.strings.add('no_interpretations');
 config.i18n.strings.add('clear_interpretation');
@@ -64,10 +57,10 @@ const styles = {
 };
 
 const EditButton = props => {
-    const { map, tooltip, icon, onClick } = props;
+    const { model, tooltip, icon, onClick } = props;
     const iconStyle = {width: 14, height: 14, padding: 0, marginLeft: 2};
 
-    if (map && map.access && map.access.update) {
+    if (model && model.access && model.access.update) {
         return (
             <IconButton tooltip={tooltip} onClick={onClick} style={iconStyle} iconStyle={iconStyle}>
                 <SvgIcon icon={icon} color={grey600} />
@@ -79,7 +72,7 @@ const EditButton = props => {
 };
 
 const InterpretationsList = props => {
-    const { interpretations, setCurrentInterpretation, d2 } = props;
+    const { d2, model, interpretations, setCurrentInterpretation, onChange } = props;
     const getUserUrl = user => `${baseurl}/dhis-web-messaging/profile.action?id=${user.id}`;
 
     return (
@@ -94,7 +87,7 @@ const InterpretationsList = props => {
                     style={styles.interpretation}
                     onClick={() => setCurrentInterpretation(interpretation.id)}
                 >
-                    <Interpretation d2={d2} interpretation={interpretation} />
+                    <Interpretation d2={d2} model={model} interpretation={interpretation} onChange={onChange} />
                 </div>
             ))}
         </div>
@@ -102,17 +95,22 @@ const InterpretationsList = props => {
 };
 
 const InterpretationDetails = props => {
-    const { interpretation, d2 } = props;
+    const { d2, model, interpretation, onChange } = props;
     const comments = _(interpretation.comments).sortBy("created").reverse().value();
 
     return (
-        <div>
-            <Interpretation d2={d2} interpretation={interpretation} showActions={true} showComments={true} />
-        </div>
+        <Interpretation
+            d2={d2}
+            model={model}
+            interpretation={interpretation}
+            onChange={onChange}
+            showActions={true}
+            showComments={true}
+        />
     );
 };
 
-const InterpretationButtons = ({ d2, currentInterpretation, setCurrentInterpretation, openInterpretationDialog }) => (
+const InterpretationButtons = ({ d2, model, currentInterpretation, setCurrentInterpretation, openInterpretationDialog }) => (
     currentInterpretation ?
         <IconButton
             style={styles.back}
@@ -124,7 +122,7 @@ const InterpretationButtons = ({ d2, currentInterpretation, setCurrentInterpreta
     :
         <IconButton
             style={styles.newInterpretation}
-            onClick={() => openInterpretationDialog({})}
+            onClick={() => openInterpretationDialog(new interpretationModel(model, {}))}
             tooltip={d2.i18n.getTranslation('write_new_interpretation')}
             tooltipPosition="bottom-left"
         >
@@ -132,114 +130,133 @@ const InterpretationButtons = ({ d2, currentInterpretation, setCurrentInterpreta
         </IconButton>
 );
 
-const InterpretationsCard = (props, context) => {
-    const {
-        map,
-        isExpanded,
-        toggleExpand,
-        interpretationToEdit,
-        openInterpretationDialog,
-        closeInterpretationDialog,
-        saveInterpretation,
-        currentInterpretationId,
-        setCurrentInterpretation,
-    } = props;
-
-    const { d2 } = context;
-
-    const sortedInterpretations = _(map.interpretations).sortBy("created").reverse().value();
-
-    const saveInterpretationAndClose = (interpretation) => {
-        saveInterpretation(interpretation);
-        closeInterpretationDialog();
+class InterpretationsCard extends React.Component {
+    state = {
+        isExpanded: true,
+        interpretationToEdit: null,
+        currentInterpretationId: null,
     };
 
-    const currentInterpretation = currentInterpretationId
-        ? interpretations.find(interpretation => interpretation.id === currentInterpretationId)
-        : null;
+    constructor(props) {
+        super(props);
+        this.notifyChange = this.notifyChange.bind(this);
+        this.toggleExpand = this.toggleExpand.bind(this);
+        this.openInterpretationDialog = this.openInterpretationDialog.bind(this);
+        this.closeInterpretationDialog = this.closeInterpretationDialog.bind(this);
+        this.saveInterpretationAndClose = this.saveInterpretationAndClose.bind(this);
+        this.setCurrentInterpretation = this.setCurrentInterpretation.bind(this);
+    }
 
-    return (
-        <Card
-            className="InterpretationsCard"
-            containerStyle={styles.container}
-            expanded={isExpanded}
-            onExpandChange={toggleExpand}
-        >
-            {interpretationToEdit &&
-                <InterpretationDialog
-                    favoriteId={map.id}
-                    interpretation={interpretationToEdit}
-                    onSave={interpretation => saveInterpretationAndClose(interpretation)}
-                    onClose={closeInterpretationDialog}
-                />
-            }
+    notifyChange() {
+        if (this.props.onChange) {
+            this.props.onChange();
+        }
+    }
 
-            <CardHeader
-                className="InterpretationsCard-header"
-                title={d2.i18n.getTranslation('interpretations')}
-                showExpandableButton={true}
-                textStyle={styles.headerText}
+    toggleExpand() {
+        this.setState({isExpanded: !this.state.isExpanded});
+    }
+
+    openInterpretationDialog(interpretation) {
+        this.setState({interpretationToEdit: interpretation});
+    }
+
+    closeInterpretationDialog() {
+        this.setState({interpretationToEdit: null});
+    }
+
+    saveInterpretation(interpretation) {
+        interpretation.save().then(this.notifyChange);
+    }
+
+    setCurrentInterpretation(interpretationId) {
+        this.setState({currentInterpretationId: interpretationId});
+    }
+
+    saveInterpretationAndClose(interpretation) {
+        this.saveInterpretation(interpretation);
+        this.closeInterpretationDialog();
+    }
+
+    render() {
+        const { model, onChange } = this.props;
+
+        const {
+            isExpanded,
+            interpretationToEdit,
+            currentInterpretationId,
+        } = this.state;
+
+        const { d2 } = this.context;
+
+        const sortedInterpretations = _(model.interpretations).sortBy("created").reverse().value();
+
+        const currentInterpretation = currentInterpretationId
+            ? model.interpretations.find(interpretation => interpretation.id === currentInterpretationId)
+            : null;
+
+        return (
+            <Card
+                className="InterpretationsCard"
+                containerStyle={styles.container}
+                expanded={isExpanded}
+                onExpandChange={this.toggleExpand}
             >
-                <InterpretationButtons
-                    d2={d2}
-                    currentInterpretation={currentInterpretation}
-                    setCurrentInterpretation={setCurrentInterpretation}
-                    openInterpretationDialog={openInterpretationDialog}
-                />
-            </CardHeader>
-
-            <CardText expandable={true} style={styles.body}>
-                {currentInterpretation
-                    ?
-                        <InterpretationDetails
-                            d2={context.d2}
-                            interpretation={currentInterpretation}
-                        />
-                    :
-                        <InterpretationsList
-                            d2={context.d2}
-                            interpretations={sortedInterpretations}
-                            setCurrentInterpretation={setCurrentInterpretation}
-                        />
+                {interpretationToEdit &&
+                    <InterpretationDialog
+                        model={model}
+                        interpretation={interpretationToEdit}
+                        onSave={this.saveInterpretationAndClose}
+                        onClose={this.closeInterpretationDialog}
+                    />
                 }
-            </CardText>
-        </Card>
-    );
-};
+
+                <CardHeader
+                    className="InterpretationsCard-header"
+                    title={d2.i18n.getTranslation('interpretations')}
+                    showExpandableButton={true}
+                    textStyle={styles.headerText}
+                >
+                    <InterpretationButtons
+                        d2={d2}
+                        model={model}
+                        currentInterpretation={currentInterpretation}
+                        setCurrentInterpretation={this.setCurrentInterpretation}
+                        openInterpretationDialog={this.openInterpretationDialog}
+                    />
+                </CardHeader>
+
+                <CardText expandable={true} style={styles.body}>
+                    {currentInterpretation
+                        ?
+                            <InterpretationDetails
+                                d2={d2}
+                                model={model}
+                                interpretation={currentInterpretation}
+                                onChange={this.notifyChange}
+                            />
+                        :
+                            <InterpretationsList
+                                d2={d2}
+                                model={model}
+                                interpretations={sortedInterpretations}
+                                setCurrentInterpretation={this.setCurrentInterpretation}
+                                onChange={this.notifyChange}
+                            />
+                    }
+                </CardText>
+            </Card>
+        );
+    }
+}
 
 InterpretationsCard.propTypes = {
-    map: PropTypes.object.isRequired,
-    isExpanded: PropTypes.bool,
-    toggleExpand: PropTypes.func.isRequired,
-    interpretationToEdit: PropTypes.object,
-    openInterpretationDialog: PropTypes.func.isRequired,
-    closeInterpretationDialog: PropTypes.func.isRequired,
-    saveInterpretation: PropTypes.func.isRequired,
-    currentInterpretationId: PropTypes.string,
-    setCurrentInterpretation: PropTypes.func.isRequired,
-};
-
-InterpretationsCard.defaultProps = {
-    isExpanded: true,
-    interpretationToEdit: null,
-    currentInterpretationId: null,
+    model: PropTypes.object.isRequired,
+    onChange: PropTypes.func.isRequired,
 };
 
 InterpretationsCard.contextTypes = {
     d2: PropTypes.object.isRequired,
 };
 
-export default connect(
-    state => ({
-        isExpanded: state.interpretations.isExpanded,
-        interpretationToEdit: state.interpretations.interpretationToEdit,
-        currentInterpretationId: state.interpretations.currentInterpretationId,
-    }),
-    {
-        toggleExpand,
-        openInterpretationDialog,
-        closeInterpretationDialog,
-        saveInterpretation,
-        setCurrentInterpretation,
-    },
-)(InterpretationsCard);
+export default InterpretationsCard;

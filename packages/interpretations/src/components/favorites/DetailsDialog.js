@@ -23,40 +23,48 @@ const styles = {
 class DetailsDialog extends Component {
     constructor(props) {
         super(props);
-        const { name, description } = props.favorite;
+        const { name, description } = props.model;
         this.state = { name, description };
     }
 
     componentWillReceiveProps(nextProps) {
-        const { name, description } = nextProps.favorite;
+        const { name, description } = nextProps.model;
         this.setState({ name, description });
+    }
+
+    onSave() {
+        const newModel = this.props.model.clone();
+        Object.assign(newModel, this.state);
+        this.props.onSave(newModel);
     }
 
     render() {
         const { d2 } = this.context;
-        const { open, favorite, onSave, onClose } = this.props;
+        const { open, model, onClose } = this.props;
         const { name, description } = this.state;
 
         if (!open)
             return null;
+
+        const actions = [
+            <Button color="primary" onClick={onClose}>
+                {d2.i18n.getTranslation('cancel')}
+            </Button>,
+            <Button
+                color="primary"
+                disabled={false}
+                onClick={this.onSave.bind(this)}
+            >
+                {d2.i18n.getTranslation('save')}
+            </Button>,
+        ];
 
         return (
             <Dialog
                 title={d2.i18n.getTranslation('edit_details')}
                 open={true}
                 onRequestClose={onClose}
-                actions={[
-                    <Button color="primary" onClick={onClose}>
-                        {d2.i18n.getTranslation('cancel')}
-                    </Button>,
-                    <Button
-                        color="primary"
-                        disabled={false}
-                        onClick={() => onSave(favorite, this.state)}
-                    >
-                        {d2.i18n.getTranslation('save')}
-                    </Button>,
-                ]}
+                actions={actions}
                 contentStyle={styles.dialog}
             >
                 <TextField
@@ -83,7 +91,7 @@ class DetailsDialog extends Component {
 
 DetailsDialog.propTypes = {
     open: PropTypes.bool,
-    favorite: PropTypes.object.isRequired,
+    model: PropTypes.object.isRequired,
     onSave: PropTypes.func.isRequired,
     onClose: PropTypes.func.isRequired,
 };

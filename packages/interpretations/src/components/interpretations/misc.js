@@ -9,7 +9,7 @@ export const getUserLink = (d2, user) => {
 
 export const Link = (props) => {
     const { label, ...otherProps } = props;
-    return <a className="interpretation" {...otherProps}>{label}</a>;
+    return <a href="#" className="interpretation" {...otherProps}>{label}</a>;
 };
 
 export const ActionSeparator = ({labelText = "·"}) => (
