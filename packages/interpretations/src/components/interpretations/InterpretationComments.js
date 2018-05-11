@@ -6,6 +6,7 @@ import { FormattedRelative } from 'react-intl';
 import PropTypes from 'prop-types';
 import CommentModel from '../../models/comment';
 import { config } from 'd2/lib/d2';
+import styles from './InterpretationsStyles.js';
 
 config.i18n.strings.add('edit');
 config.i18n.strings.add('delete');
@@ -13,11 +14,11 @@ config.i18n.strings.add('delete_comment_confirmation');
 
 const Comment = ({ d2, comment, showActions, onEdit, onDelete }) => (
     <div>
-        <div className="commentText">
+        <div style={styles.commentText}>
             {comment.text}
         </div>
 
-        <span className="tipText">
+        <span style={styles.tipText}>
             <FormattedRelative value={comment.created} />
         </span>
 
@@ -83,7 +84,7 @@ export default class InterpretationComments extends React.Component {
 
                 {comments.map(comment =>
                     <WithAvatar key={comment.id} user={comment.user}>
-                        <div className="commentAuthor">
+                        <div style={styles.commentAuthor}>
                             {getUserLink(d2, comment.user)}
                         </div>
 

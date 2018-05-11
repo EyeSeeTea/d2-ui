@@ -1,19 +1,20 @@
 import React from 'react';
 import { Avatar } from 'material-ui';
+import styles from './InterpretationsStyles.js';
 
 export const getUserLink = (d2, user) => {
     const baseurl = d2.system.systemInfo.contextPath;
     const userUrl =`${baseurl}/dhis-web-messaging/profile.action?id=${user.id}`;
-    return (<a href={userUrl} className="bold userLink" target="_blank">{user.displayName}</a>);
+    return (<a href={userUrl} style={styles.userLink} target="_blank">{user.displayName}</a>);
 };
 
 export const Link = (props) => {
     const { label, ...otherProps } = props;
-    return <a className="interpretation" {...otherProps}>{label}</a>;
+    return <a style={styles.interpretationLink} {...otherProps}>{label}</a>;
 };
 
 export const ActionSeparator = ({labelText = "·"}) => (
-    <label className="linkArea">{labelText}</label>
+    <label style={styles.linkArea}>{labelText}</label>
 );
 
 const UserAvatar = ({user}) => {
@@ -23,7 +24,7 @@ const UserAvatar = ({user}) => {
 };
 
 export const WithAvatar = ({ user, children }) => (
-    <div className="greyBackground" style={{display: "flex", marginTop: 10, marginBottom: 10}}>
+    <div style={{display: "flex", marginTop: 10, marginBottom: 10, ...styles.greyBackground}}>
         <div style={{width: 40, marginLeft: 5}}>
             <UserAvatar user={user} />
         </div>

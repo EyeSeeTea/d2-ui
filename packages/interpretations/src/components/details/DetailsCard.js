@@ -12,7 +12,7 @@ import SharingDialog from '@dhis2/d2-ui-sharing-dialog';
 import DetailsDialog from './DetailsDialog';
 import { config } from 'd2/lib/d2';
 
-import './DetailsCard.css';
+import styles from './DetailsCardStyles.js';
 
 config.i18n.strings.add('no_description');
 config.i18n.strings.add('public');
@@ -29,28 +29,12 @@ config.i18n.strings.add('views');
 config.i18n.strings.add('sharing');
 config.i18n.strings.add('edit_sharing');
 
-const styles = {
-    container: {
-        paddingBottom: 0,
-    },
-    headerText: {
-        position: 'relative',
-        width: 210,
-        top: '50%',
-        transform: 'translateY(-50%)',
-        paddingRight: 0,
-    },
-    body: {
-        padding: 0,
-    },
-};
-
 const List = ({children}) => (
-    <div className="DetailsCard-list">{children}</div>
+    <div style={styles.detailsCardList}>{children}</div>
 );
 
 const ListItem = ({label, text, button}) => (
-    <div>
+    <div style={styles.detailsCardItem}>
         {label && <label style={{fontWeight: "bold", marginRight: 5}}>{label}:</label>}
         {text}
         {button}
@@ -192,7 +176,7 @@ class DetailsCard extends React.Component {
 
         return (
             <Card
-                className="DetailsCard"
+                style={styles.detailsCard}
                 containerStyle={styles.container}
                 expanded={isExpanded}
                 onExpandChange={this.toggleDetailsExpand}
@@ -213,7 +197,7 @@ class DetailsCard extends React.Component {
                 />
 
                 <CardHeader
-                    className="DetailsCard-header"
+                    style={styles.detailsCardHeader}
                     title={getTranslation('details')}
                     showExpandableButton={true}
                     textStyle={styles.headerText}

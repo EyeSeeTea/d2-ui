@@ -13,48 +13,12 @@ import InterpretationDialog from '../interpretation-dialog/InterpretationDialog'
 import { getDateFromString } from '../../util/dateUtils';
 import Interpretation from './Interpretation';
 import interpretationModel from '../../models/interpretation';
-//import './InterpretationsCard.css';
+import styles from './InterpretationsStyles.js';
 
 config.i18n.strings.add('no_interpretations');
 config.i18n.strings.add('clear_interpretation');
 config.i18n.strings.add('write_new_interpretation');
 config.i18n.strings.add('interpretations');
-
-const styles = {
-    newInterpretation: {
-        width: 32,
-        height: 32,
-        padding: 5,
-        position: 'absolute',
-        right: 48,
-        top: 0,
-    },
-    back: {
-        width: 32,
-        height: 32,
-        padding: 5,
-        position: 'absolute',
-        right: 48,
-        top: 0,
-    },
-    container: {
-        paddingBottom: 0,
-    },
-    headerText: {
-        position: 'relative',
-        width: 210,
-        top: '50%',
-        transform: 'translateY(-50%)',
-        paddingRight: 0,
-    },
-    body: {
-        padding: 0,
-    },
-    interpretation: {
-        cursor: "pointer",
-        padding: 4,
-    },
-};
 
 const EditButton = props => {
     const { model, tooltip, icon, onClick } = props;
@@ -206,7 +170,7 @@ class InterpretationsCard extends React.Component {
 
         return (
             <Card
-                className="InterpretationsCard"
+                style={styles.interpretationsCard}
                 containerStyle={styles.container}
                 expanded={isExpanded}
                 onExpandChange={this.toggleExpand}
@@ -221,7 +185,7 @@ class InterpretationsCard extends React.Component {
                 }
 
                 <CardHeader
-                    className="InterpretationsCard-header"
+                    style={styles.interpretationsCardHeader}
                     title={d2.i18n.getTranslation('interpretations')}
                     showExpandableButton={true}
                     textStyle={styles.headerText}

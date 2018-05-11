@@ -1,5 +1,4 @@
 import React from 'react';
-import { Provider } from 'react-redux';
 import { IntlProvider, addLocaleData } from 'react-intl';
 import DetailsCard from './details/DetailsCard';
 import PropTypes from 'prop-types';

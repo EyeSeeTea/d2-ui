@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types'
 import { Link, ActionSeparator } from './misc';
 import { config } from 'd2/lib/d2';
+import styles from './InterpretationsStyles.js';
 
 config.i18n.strings.add('post_comment');
 config.i18n.strings.add('ok');
@@ -43,7 +44,7 @@ class CommentTextarea extends React.Component {
 
         return (
             <div>
-                <textarea className="commentArea" value={text} rows={4} onChange={ev => this.onChange(ev)} />
+                <textarea style={styles.commentArea} value={text} rows={4} onChange={ev => this.onChange(ev)} />
                 <Link disabled={!text} label={postText} onClick={this.onPost} />
                 {onCancel &&
                     <span>
