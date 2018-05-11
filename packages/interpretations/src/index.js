@@ -1,2 +1,2 @@
-import FavoritesDetails from './components/FavoritesDetails'
-export default FavoritesDetails
+import Interpretations from './components/Interpretations'
+export default Interpretations

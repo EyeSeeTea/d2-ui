@@ -131,38 +131,47 @@ const InterpretationButtons = ({ d2, model, currentInterpretation, setCurrentInt
 );
 
 class InterpretationsCard extends React.Component {
-    state = {
-        isExpanded: true,
-        interpretationToEdit: null,
-        currentInterpretationId: null,
-    };
-
     constructor(props) {
         super(props);
+        this.state = {
+            isExpanded: true,
+            interpretationToEdit: null,
+            currentInterpretationId: props.currentInterpretationId,
+        };
+
         this.notifyChange = this.notifyChange.bind(this);
         this.toggleExpand = this.toggleExpand.bind(this);
         this.openInterpretationDialog = this.openInterpretationDialog.bind(this);
         this.closeInterpretationDialog = this.closeInterpretationDialog.bind(this);
         this.saveInterpretationAndClose = this.saveInterpretationAndClose.bind(this);
         this.setCurrentInterpretation = this.setCurrentInterpretation.bind(this);
+        this.isControlledComponent = !!props.onCurrentInterpretationChange;
     }
 
-    notifyChange() {
+    componentWillReceiveProps(nextProps) {
+        if (this.isControlledComponent) {
+            this.setState({ currentInterpretationId: nextProps.currentInterpretationId });
+        }
+    }
+
+    notifyChange(interpretation) {
+        this.setCurrentInterpretation(interpretation ? interpretation.id : null);
+
         if (this.props.onChange) {
             this.props.onChange();
         }
     }
 
     toggleExpand() {
-        this.setState({isExpanded: !this.state.isExpanded});
+        this.setState({ isExpanded: !this.state.isExpanded });
     }
 
     openInterpretationDialog(interpretation) {
-        this.setState({interpretationToEdit: interpretation});
+        this.setState({ interpretationToEdit: interpretation });
     }
 
     closeInterpretationDialog() {
-        this.setState({interpretationToEdit: null});
+        this.setState({ interpretationToEdit: null });
     }
 
     saveInterpretation(interpretation) {
@@ -170,7 +179,15 @@ class InterpretationsCard extends React.Component {
     }
 
     setCurrentInterpretation(interpretationId) {
-        this.setState({currentInterpretationId: interpretationId});
+        const { model, onCurrentInterpretationChange } = this.props;
+        if (this.isControlledComponent) {
+            const currentInterpretation = interpretationId
+                ? model.interpretations.find(interpretation => interpretation.id === interpretationId)
+                : null;
+            onCurrentInterpretationChange(currentInterpretation);
+        } else {
+            this.setState({ currentInterpretationId: interpretationId });
+        }
     }
 
     saveInterpretationAndClose(interpretation) {
@@ -179,18 +196,10 @@ class InterpretationsCard extends React.Component {
     }
 
     render() {
-        const { model, onChange } = this.props;
-
-        const {
-            isExpanded,
-            interpretationToEdit,
-            currentInterpretationId,
-        } = this.state;
-
+        const { model } = this.props;
+        const { isExpanded, interpretationToEdit, currentInterpretationId } = this.state;
         const { d2 } = this.context;
-
         const sortedInterpretations = _(model.interpretations).sortBy("created").reverse().value();
-
         const currentInterpretation = currentInterpretationId
             ? model.interpretations.find(interpretation => interpretation.id === currentInterpretationId)
             : null;
@@ -253,6 +262,8 @@ class InterpretationsCard extends React.Component {
 InterpretationsCard.propTypes = {
     model: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
+    currentInterpretationId: PropTypes.string,
+    onCurrentInterpretationChange: PropTypes.func,
 };
 
 InterpretationsCard.contextTypes = {

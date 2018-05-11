@@ -17,18 +17,21 @@ class CommentTextarea extends React.Component {
     constructor(props) {
         super(props);
         this.state = { text: props.comment.text || "" };
+        this.onPost = this.onPost.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
         this.setState({ text: nextProps.comment.text });
     }
 
-    _onChange(ev) {
+    onChange(ev) {
         this.setState({ text: ev.target.value });
     }
 
-    _onPost() {
-        this.props.onPost(this.state.text);
+    onPost() {
+        const newComment = this.props.comment;
+        newComment.text = this.state.text;
+        this.props.onPost(newComment);
         this.setState({ text: "" });
     }
 
@@ -40,8 +43,8 @@ class CommentTextarea extends React.Component {
 
         return (
             <div>
-                <textarea className="commentArea" value={text} rows={4} onChange={ev => this._onChange(ev)} />
-                <Link disabled={!text} label={postText} onClick={() => this._onPost()} />
+                <textarea className="commentArea" value={text} rows={4} onChange={ev => this.onChange(ev)} />
+                <Link disabled={!text} label={postText} onClick={this.onPost} />
                 {onCancel &&
                     <span>
                         <ActionSeparator />

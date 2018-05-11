@@ -52,14 +52,14 @@ class Interpretation extends React.Component {
         this.deleteComment = this.deleteComment.bind(this);
     }
 
-    notifyChange() {
+    notifyChange(interpretation) {
         if (this.props.onChange) {
-            this.props.onChange();
+            this.props.onChange(interpretation);
         }
     }
 
     saveInterpretationLike(interpretation, value) {
-        interpretation.like(value).then(this.notifyChange);
+        interpretation.like(value).then(() => this.notifyChange(interpretation));
     }
 
     like() {
@@ -73,7 +73,7 @@ class Interpretation extends React.Component {
     deleteInterpretation() {
         const { d2, interpretation } = this.props;
         if (confirm(d2.i18n.getTranslation('delete_interpretation_confirmation'))) {
-            interpretation.delete().then(this.notifyChange);
+            interpretation.delete().then(() => this.notifyChange(null));
         }
     }
 
@@ -86,15 +86,15 @@ class Interpretation extends React.Component {
     }
 
     saveInterpretation(interpretation) {
-        interpretation.save().then(this.notifyChange);
+        interpretation.save().then(() => this.notifyChange(this.props.interpretation));
     }
 
     saveComment(comment) {
-        comment.save().then(this.notifyChange);
+        comment.save().then(() => this.notifyChange(this.props.interpretation));
     }
 
     deleteComment(comment) {
-        comment.delete().then(this.notifyChange);
+        comment.delete().then(() => this.notifyChange(this.props.interpretation));
     }
 
     saveInterpretationAndClose() {

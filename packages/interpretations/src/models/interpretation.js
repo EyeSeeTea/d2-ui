@@ -1,6 +1,31 @@
 import { apiFetch } from '../util/api';
 import Comment from './comment';
 
+const interpretationsFields = [
+    'id',
+    'user[id,displayName]',
+    'created',
+    'likes',
+    'likedBy[id,displayName]',
+    'text',
+    'comments[id,text,created,user[id,displayName]]',
+];
+
+const baseFields = [
+    'id',
+    'name',
+    'href',
+    'user[id,displayName]',
+    'displayName',
+    'description',
+    'created',
+    'lastUpdated',
+    'access',
+    'publicAccess',
+    'userGroupAccesses',
+    `interpretations[${interpretationsFields.join(',')}]`,
+];
+
 export default class Interpretation {
   constructor(parent, attributes) {
     this._parent = parent;

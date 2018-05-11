@@ -46,24 +46,25 @@ export default class InterpretationComments extends React.Component {
 
     constructor(props) {
         super(props);
+        this.onSave = this.onSave.bind(this);
+        this.onCancelEdit = this.onCancelEdit.bind(this);
     }
 
-    _onEdit(comment) {
+    onEdit(comment) {
         this.setState({ commentToEdit: comment });
     }
 
-    _onCancelEdit(comment) {
+    onCancelEdit(comment) {
         this.setState({ commentToEdit: null });
     }
 
-    _onDelete(comment) {
+    onDelete(comment) {
         if (confirm(this.props.d2.i18n.getTranslation('delete_comment_confirmation'))) {
             this.props.onDelete(comment);
         }
     }
 
-    _onSave(comment, text) {
-        comment.text = text;
+    onSave(comment) {
         this.props.onSave(comment);
         this.setState({ commentToEdit: null });
     }
@@ -72,11 +73,12 @@ export default class InterpretationComments extends React.Component {
         const { d2, interpretation } = this.props;
         const { commentToEdit } = this.state;
         const comments = interpretation.comments;
+        const newComment = new CommentModel(interpretation, {text: ""});
 
         return (
             <div>
                 <WithAvatar user={d2.currentUser}>
-                    <CommentTextarea comment={{text: ""}} onPost={text => this._onSave(new CommentModel(interpretation), text)} />
+                    <CommentTextarea comment={newComment} onPost={this.onSave} />
                 </WithAvatar>
 
                 {comments.map(comment =>
@@ -89,16 +91,16 @@ export default class InterpretationComments extends React.Component {
                             ?
                                 <CommentTextarea
                                     comment={comment}
-                                    onPost={text => this._onSave(comment, text)}
-                                    onCancel={() => this._onCancelEdit()}
+                                    onPost={this.onSave}
+                                    onCancel={this.onCancelEdit}
                                 />
                             :
                                 <Comment
                                     d2={d2}
                                     comment={comment}
                                     showActions={userCanManage(d2, comment)}
-                                    onEdit={() => this._onEdit(comment)}
-                                    onDelete={() => this._onDelete(comment)}
+                                    onEdit={() => this.onEdit(comment)}
+                                    onDelete={() => this.onDelete(comment)}
                                 />
                         }
                     </WithAvatar>
