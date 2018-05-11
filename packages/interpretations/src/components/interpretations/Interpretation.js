@@ -5,7 +5,7 @@ import { getDateFromString } from '../../util/dateUtils';
 import SvgIcon from 'd2-ui/lib/svg-icon/SvgIcon';
 import { FormattedDate } from 'react-intl';
 import InterpretationComments from './InterpretationComments';
-import InterpretationDialog from '../interpretation-dialog/InterpretationDialog';
+import InterpretationDialog from './InterpretationDialog';
 import { Link, ActionSeparator, WithAvatar, getUserLink } from './misc';
 import { userCanManage } from '../../util/auth';
 import { config } from 'd2/lib/d2';

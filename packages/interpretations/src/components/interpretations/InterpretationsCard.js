@@ -9,7 +9,7 @@ import SvgIcon from 'd2-ui/lib/svg-icon/SvgIcon';
 import { grey600 } from 'material-ui/styles/colors';
 import { config } from 'd2/lib/d2';
 import size from 'lodash/fp/size';
-import InterpretationDialog from '../interpretation-dialog/InterpretationDialog';
+import InterpretationDialog from './InterpretationDialog';
 import { getDateFromString } from '../../util/dateUtils';
 import Interpretation from './Interpretation';
 import interpretationModel from '../../models/interpretation';
