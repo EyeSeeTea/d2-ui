@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Card, CardHeader, CardText } from 'material-ui/Card';
 import Divider from 'material-ui/Divider';
 import IconButton from 'material-ui/IconButton';
-import SvgIcon from 'd2-ui/lib/svg-icon/SvgIcon';
+import { SvgIcon } from '@dhis2/d2-ui-core';
 import { grey600 } from 'material-ui/styles/colors';
 import { getDateFromString } from '../../util/dateUtils';
 import size from 'lodash/fp/size';

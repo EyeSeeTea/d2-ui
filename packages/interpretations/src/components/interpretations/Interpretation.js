@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import FlatButton from 'material-ui/FlatButton/FlatButton';
 import { getDateFromString } from '../../util/dateUtils';
-import SvgIcon from 'd2-ui/lib/svg-icon/SvgIcon';
+import { SvgIcon } from '@dhis2/d2-ui-core';
 import { FormattedDate } from 'react-intl';
 import InterpretationComments from './InterpretationComments';
 import InterpretationDialog from './InterpretationDialog';

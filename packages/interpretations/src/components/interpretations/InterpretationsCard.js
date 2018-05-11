@@ -5,7 +5,7 @@ import Divider from 'material-ui/Divider';
 import Button from 'material-ui/FlatButton';
 import AddCircle from 'material-ui/svg-icons/content/add-circle-outline';
 import IconButton from 'material-ui/IconButton';
-import SvgIcon from 'd2-ui/lib/svg-icon/SvgIcon';
+import { SvgIcon } from '@dhis2/d2-ui-core';
 import { grey600 } from 'material-ui/styles/colors';
 import { config } from 'd2/lib/d2';
 import size from 'lodash/fp/size';
