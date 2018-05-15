@@ -38,7 +38,7 @@ export default class OrganisationUnitTreeMultiSelect extends React.Component {
             return plural;
         };
 
-        const {levels: levelsFilter, groups: groupsFilter} = this.props.filters || {};
+        const { levels: levelsFilter, groups: groupsFilter } = this.props.filters || {};
 
         Promise.all([
             d2.currentUser.getOrganisationUnits({
@@ -150,12 +150,12 @@ export default class OrganisationUnitTreeMultiSelect extends React.Component {
         });
         userOus$.then(userOus => {
             const selectedPaths = userOus.toArray().map(ou => ou.path);
-            this.setState({selectedOrgUnits: selectedPaths});
+            this.setState({ selectedOrgUnits: selectedPaths });
         });
     }
 
     _deselectAll() {
-        this.setState({selectedOrgUnits: []});
+        this.setState({ selectedOrgUnits: [] });
     }
 
     render() {
@@ -168,7 +168,7 @@ export default class OrganisationUnitTreeMultiSelect extends React.Component {
             zIndex: 1,
             background: 'white',
             marginLeft: '1rem',
-            marginTop: '1rem',
+            marginTop: '0.3rem',
             display: 'inline-block',
         };
         const helpStyles = {
@@ -182,15 +182,15 @@ export default class OrganisationUnitTreeMultiSelect extends React.Component {
             color: 'rgba(0,0,0,0.5)',
         };
         const controlOverlayStyles = this.state.currentRoot ? {} : {
-                position: 'absolute',
-                width: 495,
-                height: 240,
-                marginLeft: -10,
-                marginTop: 4,
-                backgroundColor: 'rgba(230,230,230,0.3)',
-                zIndex: 2,
-                borderRadius: 8,
-            };
+            position: 'absolute',
+            width: 495,
+            height: 240,
+            marginLeft: -10,
+            marginTop: 4,
+            backgroundColor: 'rgba(230,230,230,0.3)',
+            zIndex: 2,
+            borderRadius: 8,
+        };
         const currentRootStyle = {
             border: '1px solid rgba(0,0,0,0.1)',
             borderRadius: 3,
@@ -198,6 +198,16 @@ export default class OrganisationUnitTreeMultiSelect extends React.Component {
             padding: 2,
             margin: 4,
         };
+        const style = {
+            button: {
+                position: 'relative',
+                top: 3,
+                marginLeft: 16,
+                boxShadow: '0px 1px 6px rgba(0, 0, 0, 0.12), 0px 1px 4px rgba(0, 0, 0, 0.12)',
+            }
+        };
+        style.button1 = Object.assign({}, style.button, { marginLeft: 0 });
+        
         const getTranslation = this.context.d2.i18n.getTranslation.bind(this.context.d2.i18n);
 
         return (
@@ -209,19 +219,25 @@ export default class OrganisationUnitTreeMultiSelect extends React.Component {
                 />
                 <div className="organisation-unit-tree__selected">
                     <div>
-                        {this.state.selectedOrgUnits.length} 
+                        {this.state.selectedOrgUnits.length}
                         &nbsp;
                         {this.context.d2.i18n.getTranslation('organisation_units_selected')}
-                    </div>
-
-                    <div>
-                        <RaisedButton onClick={this._selectAll} label={getTranslation('select_all')} />
-                        <RaisedButton onClick={this._deselectAll} label={getTranslation('deselect_all')} />
                     </div>
                 </div>
                 {this.renderRoots()}
                 {this.state.orgUnitGroups && this.state.orgUnitLevels && (
                     <div style={controlStyles}>
+
+                        <span>
+                            {this.context.d2.i18n.getTranslation('for_all_organisation_units')}
+                            <span style={currentRootStyle}>{this.context.d2.i18n.getTranslation('tree')}</span>:
+                        </span>
+                        <div style={controlOverlayStyles}></div>
+                        <div style={{ marginTop: 8, marginBottom: 16 }}>
+                            <RaisedButton onClick={this._selectAll} label={getTranslation('select_all_in_tree')} style={style.button1}/>
+                            <RaisedButton onClick={this._deselectAll} label={getTranslation('deselect_all_in_tree')} style={style.button}/>
+                        </div>
+
                         {this.state.currentRoot
                             ? (
                                 <span>{this.context.d2.i18n.getTranslation('for_organisation_units_within')}
@@ -244,7 +260,7 @@ export default class OrganisationUnitTreeMultiSelect extends React.Component {
                             currentRoot={this.state.currentRoot}
                             onUpdateSelection={this._setSelection}
                         />
-                        <div style={{ marginTop: 16 }}>
+                        <div>
                             <OrgUnitSelectAll
                                 selected={this.state.selectedOrgUnits}
                                 currentRoot={this.state.currentRoot}
@@ -323,5 +339,5 @@ OrganisationUnitTreeMultiSelect.propTypes = {
 };
 OrganisationUnitTreeMultiSelect.defaultProps = {
     value: [],
-    onChange: () => {},
+    onChange: () => { },
 };
