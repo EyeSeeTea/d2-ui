@@ -5,12 +5,12 @@ import Divider from 'material-ui/Divider';
 import IconButton from 'material-ui/IconButton';
 import { SvgIcon } from '@dhis2/d2-ui-core';
 import { grey600 } from 'material-ui/styles/colors';
-import { getDateFromString } from '../../util/dateUtils';
 import size from 'lodash/fp/size';
 import pick from 'lodash/fp/pick';
 import SharingDialog from '@dhis2/d2-ui-sharing-dialog';
 import DetailsDialog from './DetailsDialog';
 import { config } from 'd2/lib/d2';
+import { injectIntl } from 'react-intl';
 
 import styles from './DetailsCardStyles.js';
 
@@ -147,7 +147,7 @@ class DetailsCard extends React.Component {
     }
 
     render() {
-        const { model } = this.props;
+        const { model, intl: { formatDate } } = this.props;
         const { isExpanded, isSharingDialogOpen, isDetailsDialogOpen } = this.state;
         const { d2 } = this.context;
         const getTranslation = d2.i18n.getTranslation.bind(d2.i18n);
@@ -205,8 +205,8 @@ class DetailsCard extends React.Component {
                     <List>
                         <ListItem text={getDescription(d2, model)} button={createButton} />
                         <ListItem label={getTranslation('owner')} text={owner} />
-                        <ListItem label={getTranslation('created')} text={getDateFromString(model.created)} />
-                        <ListItem label={getTranslation('last_updated')} text={getDateFromString(model.lastUpdated)} />
+                        <ListItem label={getTranslation('created')} text={formatDate(model.created)} />
+                        <ListItem label={getTranslation('last_updated')} text={formatDate(model.lastUpdated)} />
                         <ListItem label={getTranslation('views')} text={model.favoriteViews} />
                         <ListItem label={getTranslation('sharing')} text={getSharingText(d2, model)} button={userGroupsButton} />
                     </List>
@@ -225,4 +225,4 @@ DetailsCard.contextTypes = {
     d2: PropTypes.object.isRequired,
 };
 
-export default DetailsCard;
+export default injectIntl(DetailsCard);

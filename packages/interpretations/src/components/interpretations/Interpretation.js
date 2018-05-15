@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import FlatButton from 'material-ui/FlatButton/FlatButton';
-import { getDateFromString } from '../../util/dateUtils';
 import { SvgIcon } from '@dhis2/d2-ui-core';
 import { FormattedDate } from 'react-intl';
 import InterpretationComments from './InterpretationComments';
@@ -64,7 +63,7 @@ class Interpretation extends React.Component {
     deleteInterpretation() {
         const { interpretation } = this.props;
         const { d2 } = this.context;
-        
+
         if (confirm(d2.i18n.getTranslation('delete_interpretation_confirmation'))) {
             interpretation.delete().then(() => this.notifyChange(null));
         }

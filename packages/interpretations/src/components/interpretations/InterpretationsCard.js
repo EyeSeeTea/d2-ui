@@ -10,7 +10,6 @@ import { grey600 } from 'material-ui/styles/colors';
 import { config } from 'd2/lib/d2';
 import _ from 'lodash';
 import InterpretationDialog from './InterpretationDialog';
-import { getDateFromString } from '../../util/dateUtils';
 import Interpretation from './Interpretation';
 import { EditButton } from './misc';
 import InterpretationModel from '../../models/interpretation';

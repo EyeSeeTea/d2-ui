@@ -1,5 +1,5 @@
 export const userCanManage = (d2, object) => {
-    const {currentUser} = d2;
+    const {currentUser} = d2 || {};
 
     if (!object || !object.user || !currentUser) {
         return false;
