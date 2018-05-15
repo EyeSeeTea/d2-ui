@@ -58,7 +58,7 @@ export default {
 
     interpretation: {
         "cursor": "pointer",
-        "padding": 4,
+        "padding": 0,
     },
 
     interpretationCommentArea: {

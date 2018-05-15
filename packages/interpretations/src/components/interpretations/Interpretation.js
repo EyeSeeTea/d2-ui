@@ -10,6 +10,7 @@ import { Link, ActionSeparator, WithAvatar, getUserLink } from './misc';
 import { userCanManage } from '../../util/auth';
 import { config } from 'd2/lib/d2';
 import styles from './InterpretationsStyles.js';
+import _ from 'lodash';
 
 config.i18n.strings.add('edit');
 config.i18n.strings.add('delete');
@@ -61,7 +62,9 @@ class Interpretation extends React.Component {
     }
 
     deleteInterpretation() {
-        const { d2, interpretation } = this.props;
+        const { interpretation } = this.props;
+        const { d2 } = this.context;
+        
         if (confirm(d2.i18n.getTranslation('delete_interpretation_confirmation'))) {
             interpretation.delete().then(() => this.notifyChange(null));
         }
@@ -93,10 +96,11 @@ class Interpretation extends React.Component {
     }
 
     render() {
-        const {  interpretation, model, showActions, showComments } = this.props;
+        const {  interpretation, extended } = this.props;
         const { interpretationToEdit } = this.state;
         const { d2 } = this.context;
-        const comments = _(interpretation.comments).sortBy("created").reverse().value();
+        const showActions = extended;
+        const showComments = extended;
         const likedByTooltip = _(interpretation.likedBy).map(user => user.displayName).sortBy().join("\n");
         const currentUserLikesInterpretation = _(interpretation.likedBy).some(user => user.id === d2.currentUser.id);
 
@@ -104,7 +108,6 @@ class Interpretation extends React.Component {
             <div>
                 {interpretationToEdit &&
                     <InterpretationDialog
-                        model={model}
                         interpretation={interpretationToEdit}
                         onSave={this.saveInterpretationAndClose}
                         onClose={this.closeInterpretationDialog}
@@ -128,12 +131,12 @@ class Interpretation extends React.Component {
 
                     <div>
                         {showActions &&
-                            <div>
+                            <div className="actions">
                                 {currentUserLikesInterpretation
                                     ? <Link label={d2.i18n.getTranslation('unlike')} onClick={this.unlike} />
                                     : <Link label={d2.i18n.getTranslation('like')} onClick={this.like} />}
                                 {userCanManage(d2, interpretation) &&
-                                    <span>
+                                    <span className="owner-actions">
                                         <ActionSeparator />
                                         <Link label={d2.i18n.getTranslation('edit')} onClick={this.openInterpretationDialog} />
                                         <ActionSeparator />
@@ -146,7 +149,7 @@ class Interpretation extends React.Component {
                             <div style={styles.likeArea}>
                                 <SvgIcon icon="ThumbUp" style={styles.likeIcon} />
 
-                                <span style={{color: "#22A"}} title={likedByTooltip}>
+                                <span style={{color: "#22A"}} className="liked-by" title={likedByTooltip}>
                                     {interpretation.likes} {d2.i18n.getTranslation('people_like_this')}
                                 </span>
 
@@ -171,16 +174,13 @@ class Interpretation extends React.Component {
 }
 
 Interpretation.propTypes = {
-    model: PropTypes.object.isRequired,
     interpretation: PropTypes.object.isRequired,
-    showActions: PropTypes.bool.isRequired,
-    showComments: PropTypes.bool.isRequired,
     onChange: PropTypes.func.isRequired,
+    extended: PropTypes.bool.isRequired,
 };
 
 Interpretation.defaultProps = {
-    showActions: false,
-    showComments: false,
+    extended: false,
 };
 
 Interpretation.contextTypes = {

@@ -70,10 +70,6 @@ const getDescription = (d2, model) => {
     }
 };
 
-const getOwner = model => {
-    return model.user ? model.user.displayName : '-';
-};
-
 const accessMapping = {
     "--------": "none",
     "r-------": "read",
@@ -85,7 +81,7 @@ const getSharingText = (d2, model) => {
     const publicAccess = d2.i18n.getTranslation('public') + ": " +
         d2.i18n.getTranslation("access_" + publicAccessKey);
 
-    const userGroupsCount = _.size(model.userGroupAccesses);
+    const userGroupsCount = (model.userGroupAccesses || []).length;
     const userGroupsInfo = userGroupsCount > 2
         ? `${userGroupsCount} ${d2.i18n.getTranslation('user_groups')}`
         : (model.userGroupAccesses || []).map(userGroup => userGroup.displayName).join(", ");
@@ -155,6 +151,7 @@ class DetailsCard extends React.Component {
         const { isExpanded, isSharingDialogOpen, isDetailsDialogOpen } = this.state;
         const { d2 } = this.context;
         const getTranslation = d2.i18n.getTranslation.bind(d2.i18n);
+        const owner = model.user ? model.user.displayName : '-';
 
         const createButton = (
             <EditButton
@@ -207,7 +204,7 @@ class DetailsCard extends React.Component {
                 <CardText expandable={true} style={styles.body}>
                     <List>
                         <ListItem text={getDescription(d2, model)} button={createButton} />
-                        <ListItem label={getTranslation('owner')} text={getOwner(model)} />
+                        <ListItem label={getTranslation('owner')} text={owner} />
                         <ListItem label={getTranslation('created')} text={getDateFromString(model.created)} />
                         <ListItem label={getTranslation('last_updated')} text={getDateFromString(model.lastUpdated)} />
                         <ListItem label={getTranslation('views')} text={model.favoriteViews} />

@@ -56,6 +56,12 @@ class CommentTextarea extends React.Component {
     }
 };
 
+CommentTextarea.propTypes = {
+    comment: PropTypes.object.isRequired,
+    onPost: PropTypes.func.isRequired,
+    onCancel: PropTypes.func,
+};
+
 CommentTextarea.contextTypes = {
     d2: PropTypes.object.isRequired,
 };

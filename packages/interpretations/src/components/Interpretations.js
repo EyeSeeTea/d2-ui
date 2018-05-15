@@ -1,34 +1,10 @@
 import React from 'react';
 import { IntlProvider, addLocaleData } from 'react-intl';
-import DetailsCard from './details/DetailsCard';
 import PropTypes from 'prop-types';
-import Interpretation from '../models/interpretation';
+import { LoadingMask } from '@dhis2/d2-ui-core';
+import { getFavoriteWithInterpretations } from '../models/helpers';
+import DetailsCard from './details/DetailsCard';
 import InterpretationsCard from './interpretations/InterpretationsCard';
-
-const interpretationsFields = [
-    'id',
-    'user[id,displayName]',
-    'created',
-    'likes',
-    'likedBy[id,displayName]',
-    'text',
-    'comments[id,text,created,user[id,displayName]]',
-];
-
-const baseFields = [
-    'id',
-    'name',
-    'href',
-    'user[id,displayName]',
-    'displayName',
-    'description',
-    'created',
-    'lastUpdated',
-    'access',
-    'publicAccess',
-    'userGroupAccesses',
-    `interpretations[${interpretationsFields.join(',')}]`,
-];
 
 class Interpretations extends React.Component {
     state = { model: null };
@@ -62,19 +38,14 @@ class Interpretations extends React.Component {
     }
 
     loadModel(props) {
-        const { id, type } = props;
-        const modelClass = this.props.d2.models[type];
-        const options = {fields: baseFields.join(',')};
-
-        return modelClass.get(id, options).then(model => {
-            model.interpretations = model.interpretations.map(attrs => new Interpretation(model, attrs));
+        return getFavoriteWithInterpretations(props.d2, props.type, props.id).then(model => {
             this.setState({model});
             return model;
         });
     }
 
     onChange() {
-        this.loadModel(this.props)
+        return this.loadModel(this.props)
             .then(newModel => this.props.onChange && this.props.onChange(newModel));
     }
 
@@ -84,7 +55,7 @@ class Interpretations extends React.Component {
         const locale = this.getLocale(d2);
 
         if (!model)
-          return <p>Loading...</p>;
+          return <LoadingMask style={{position: "relative"}} size={1} />;
 
         return (
             <IntlProvider locale={locale}>
@@ -110,8 +81,8 @@ Interpretations.propTypes = {
     d2: PropTypes.object.isRequired,
     type: PropTypes.string.isRequired,
     id: PropTypes.string.isRequired,
-    onChange: PropTypes.func,
     currentInterpretationId: PropTypes.string,
+    onChange: PropTypes.func,
     onCurrentInterpretationChange: PropTypes.func,
 };
 

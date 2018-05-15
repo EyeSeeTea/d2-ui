@@ -2,10 +2,25 @@ import React from 'react';
 import { Avatar } from 'material-ui';
 import styles from './InterpretationsStyles.js';
 
+export const EditButton = props => {
+    const { model, tooltip, icon, onClick } = props;
+    const iconStyle = {width: 14, height: 14, padding: 0, marginLeft: 2};
+
+    if (model && model.access && model.access.update) {
+        return (
+            <IconButton tooltip={tooltip} onClick={onClick} style={iconStyle} iconStyle={iconStyle}>
+                <SvgIcon icon={icon} color={grey600} />
+            </IconButton>
+        );
+    } else {
+        return null;
+    }
+};
+
 export const getUserLink = (d2, user) => {
     const baseurl = d2.system.systemInfo.contextPath;
     const userUrl =`${baseurl}/dhis-web-messaging/profile.action?id=${user.id}`;
-    return (<a href={userUrl} style={styles.userLink} target="_blank">{user.displayName}</a>);
+    return (<a href={userUrl} style={styles.userLink} className="author" target="_blank">{user.displayName}</a>);
 };
 
 export const Link = (props) => {

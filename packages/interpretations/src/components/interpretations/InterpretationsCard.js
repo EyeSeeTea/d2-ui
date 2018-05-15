@@ -8,11 +8,12 @@ import IconButton from 'material-ui/IconButton';
 import { SvgIcon } from '@dhis2/d2-ui-core';
 import { grey600 } from 'material-ui/styles/colors';
 import { config } from 'd2/lib/d2';
-import size from 'lodash/fp/size';
+import _ from 'lodash';
 import InterpretationDialog from './InterpretationDialog';
 import { getDateFromString } from '../../util/dateUtils';
 import Interpretation from './Interpretation';
-import interpretationModel from '../../models/interpretation';
+import { EditButton } from './misc';
+import InterpretationModel from '../../models/interpretation';
 import styles from './InterpretationsStyles.js';
 
 config.i18n.strings.add('no_interpretations');
@@ -20,22 +21,7 @@ config.i18n.strings.add('clear_interpretation');
 config.i18n.strings.add('write_new_interpretation');
 config.i18n.strings.add('interpretations');
 
-const EditButton = props => {
-    const { model, tooltip, icon, onClick } = props;
-    const iconStyle = {width: 14, height: 14, padding: 0, marginLeft: 2};
-
-    if (model && model.access && model.access.update) {
-        return (
-            <IconButton tooltip={tooltip} onClick={onClick} style={iconStyle} iconStyle={iconStyle}>
-                <SvgIcon icon={icon} color={grey600} />
-            </IconButton>
-        );
-    } else {
-        return null;
-    }
-};
-
-const InterpretationsList = props => {
+const getInterpretationsList = props => {
     const { d2, model, interpretations, setCurrentInterpretation, onChange } = props;
     const getUserUrl = user => `${baseurl}/dhis-web-messaging/profile.action?id=${user.id}`;
 
@@ -49,16 +35,23 @@ const InterpretationsList = props => {
                 <div
                     key={interpretation.id}
                     style={styles.interpretation}
+                    className="interpretation-box"
                     onClick={() => setCurrentInterpretation(interpretation.id)}
                 >
-                    <Interpretation d2={d2} model={model} interpretation={interpretation} onChange={onChange} />
+                    <Interpretation
+                        d2={d2}
+                        model={model}
+                        interpretation={interpretation}
+                        onChange={onChange}
+                        extended={false}
+                    />
                 </div>
             ))}
         </div>
     );
 };
 
-const InterpretationDetails = props => {
+const getInterpretationDetails = props => {
     const { d2, model, interpretation, onChange } = props;
     const comments = _(interpretation.comments).sortBy("created").reverse().value();
 
@@ -68,31 +61,35 @@ const InterpretationDetails = props => {
             model={model}
             interpretation={interpretation}
             onChange={onChange}
-            showActions={true}
-            showComments={true}
+            extended={true}
         />
     );
 };
 
-const InterpretationButtons = ({ d2, model, currentInterpretation, setCurrentInterpretation, openInterpretationDialog }) => (
-    currentInterpretation ?
-        <IconButton
-            style={styles.back}
-            onClick={() => setCurrentInterpretation(null)}
-            tooltip={d2.i18n.getTranslation('clear_interpretation')}
-        >
-           <SvgIcon icon="ChevronLeft" color={grey600} />
-        </IconButton>
-    :
-        <IconButton
-            style={styles.newInterpretation}
-            onClick={() => openInterpretationDialog(new interpretationModel(model, {}))}
-            tooltip={d2.i18n.getTranslation('write_new_interpretation')}
-            tooltipPosition="bottom-left"
-        >
-            <SvgIcon icon="Add" color={grey600} />
-        </IconButton>
-);
+const getInterpretationButtons = props => {
+    const { d2, model, currentInterpretation, setCurrentInterpretation, openNewInterpretationDialog } = props;
+
+    return (
+        currentInterpretation ?
+            <IconButton
+                style={styles.back}
+                onClick={() => setCurrentInterpretation(null)}
+                tooltip={d2.i18n.getTranslation('clear_interpretation')}
+                tooltipPosition="top-left"
+            >
+               <SvgIcon icon="ChevronLeft" color={grey600} />
+            </IconButton>
+        :
+            <IconButton
+                style={styles.newInterpretation}
+                onClick={openNewInterpretationDialog}
+                tooltip={d2.i18n.getTranslation('write_new_interpretation')}
+                tooltipPosition="top-left"
+            >
+                <SvgIcon icon="Add" color={grey600} />
+            </IconButton>
+    );
+};
 
 class InterpretationsCard extends React.Component {
     constructor(props) {
@@ -105,7 +102,7 @@ class InterpretationsCard extends React.Component {
 
         this.notifyChange = this.notifyChange.bind(this);
         this.toggleExpand = this.toggleExpand.bind(this);
-        this.openInterpretationDialog = this.openInterpretationDialog.bind(this);
+        this.openNewInterpretationDialog = this.openNewInterpretationDialog.bind(this);
         this.closeInterpretationDialog = this.closeInterpretationDialog.bind(this);
         this.saveInterpretationAndClose = this.saveInterpretationAndClose.bind(this);
         this.setCurrentInterpretation = this.setCurrentInterpretation.bind(this);
@@ -115,6 +112,12 @@ class InterpretationsCard extends React.Component {
     componentWillReceiveProps(nextProps) {
         if (this.isControlledComponent) {
             this.setState({ currentInterpretationId: nextProps.currentInterpretationId });
+        }
+    }
+
+    componentDidMount() {
+        if (this.props.currentInterpretationId == "new") {
+            this.openNewInterpretationDialog();
         }
     }
 
@@ -130,8 +133,9 @@ class InterpretationsCard extends React.Component {
         this.setState({ isExpanded: !this.state.isExpanded });
     }
 
-    openInterpretationDialog(interpretation) {
-        this.setState({ interpretationToEdit: interpretation });
+    openNewInterpretationDialog() {
+        const newInterpretation = new InterpretationModel(this.props.model, {});
+        this.setState({ interpretationToEdit: newInterpretation });
     }
 
     closeInterpretationDialog() {
@@ -144,6 +148,7 @@ class InterpretationsCard extends React.Component {
 
     setCurrentInterpretation(interpretationId) {
         const { model, onCurrentInterpretationChange } = this.props;
+
         if (this.isControlledComponent) {
             const currentInterpretation = interpretationId
                 ? model.interpretations.find(interpretation => interpretation.id === interpretationId)
@@ -190,32 +195,32 @@ class InterpretationsCard extends React.Component {
                     showExpandableButton={true}
                     textStyle={styles.headerText}
                 >
-                    <InterpretationButtons
-                        d2={d2}
-                        model={model}
-                        currentInterpretation={currentInterpretation}
-                        setCurrentInterpretation={this.setCurrentInterpretation}
-                        openInterpretationDialog={this.openInterpretationDialog}
-                    />
+                    {getInterpretationButtons({
+                        d2: d2,
+                        model: model,
+                        currentInterpretation: currentInterpretation,
+                        setCurrentInterpretation: this.setCurrentInterpretation,
+                        openNewInterpretationDialog: this.openNewInterpretationDialog,
+                    })}
                 </CardHeader>
 
                 <CardText expandable={true} style={styles.body}>
                     {currentInterpretation
                         ?
-                            <InterpretationDetails
-                                d2={d2}
-                                model={model}
-                                interpretation={currentInterpretation}
-                                onChange={this.notifyChange}
-                            />
+                            getInterpretationDetails({
+                                d2: d2,
+                                model: model,
+                                interpretation: currentInterpretation,
+                                onChange: this.notifyChange,
+                            })
                         :
-                            <InterpretationsList
-                                d2={d2}
-                                model={model}
-                                interpretations={sortedInterpretations}
-                                setCurrentInterpretation={this.setCurrentInterpretation}
-                                onChange={this.notifyChange}
-                            />
+                            getInterpretationsList({
+                                d2: d2,
+                                model: model,
+                                interpretations: sortedInterpretations,
+                                setCurrentInterpretation: this.setCurrentInterpretation,
+                                onChange: this.notifyChange,
+                            })
                     }
                 </CardText>
             </Card>
@@ -225,8 +230,8 @@ class InterpretationsCard extends React.Component {
 
 InterpretationsCard.propTypes = {
     model: PropTypes.object.isRequired,
-    onChange: PropTypes.func.isRequired,
     currentInterpretationId: PropTypes.string,
+    onChange: PropTypes.func.isRequired,
     onCurrentInterpretationChange: PropTypes.func,
 };
 

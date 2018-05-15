@@ -6,6 +6,7 @@ import { FormattedRelative } from 'react-intl';
 import PropTypes from 'prop-types';
 import CommentModel from '../../models/comment';
 import { config } from 'd2/lib/d2';
+import _ from 'lodash';
 import styles from './InterpretationsStyles.js';
 
 config.i18n.strings.add('edit');
@@ -34,8 +35,11 @@ const Comment = ({ d2, comment, showActions, onEdit, onDelete }) => (
 );
 
 export default class InterpretationComments extends React.Component {
-    static propTypes = {
+    static contextTypes = {
         d2: PropTypes.object.isRequired,
+    };
+
+    static propTypes = {
         interpretation: PropTypes.object.isRequired,
         onSave: PropTypes.func.isRequired,
         onDelete: PropTypes.func.isRequired,
@@ -60,7 +64,7 @@ export default class InterpretationComments extends React.Component {
     }
 
     onDelete(comment) {
-        if (confirm(this.props.d2.i18n.getTranslation('delete_comment_confirmation'))) {
+        if (confirm(this.context.d2.i18n.getTranslation('delete_comment_confirmation'))) {
             this.props.onDelete(comment);
         }
     }
@@ -71,9 +75,10 @@ export default class InterpretationComments extends React.Component {
     }
 
     render() {
-        const { d2, interpretation } = this.props;
+        const { interpretation } = this.props;
+        const { d2 } = this.context;
         const { commentToEdit } = this.state;
-        const comments = interpretation.comments;
+        const comments = _(interpretation.comments).sortBy("created").reverse().value();
         const newComment = new CommentModel(interpretation, {text: ""});
 
         return (
@@ -82,30 +87,32 @@ export default class InterpretationComments extends React.Component {
                     <CommentTextarea comment={newComment} onPost={this.onSave} />
                 </WithAvatar>
 
-                {comments.map(comment =>
-                    <WithAvatar key={comment.id} user={comment.user}>
-                        <div style={styles.commentAuthor}>
-                            {getUserLink(d2, comment.user)}
-                        </div>
+                <div className="interpretation-comments">
+                    {comments.map(comment =>
+                        <WithAvatar key={comment.id} user={comment.user}>
+                            <div style={styles.commentAuthor}>
+                                {getUserLink(d2, comment.user)}
+                            </div>
 
-                        {commentToEdit && commentToEdit.id === comment.id
-                            ?
-                                <CommentTextarea
-                                    comment={comment}
-                                    onPost={this.onSave}
-                                    onCancel={this.onCancelEdit}
-                                />
-                            :
-                                <Comment
-                                    d2={d2}
-                                    comment={comment}
-                                    showActions={userCanManage(d2, comment)}
-                                    onEdit={() => this.onEdit(comment)}
-                                    onDelete={() => this.onDelete(comment)}
-                                />
-                        }
-                    </WithAvatar>
-                )}
+                            {commentToEdit && commentToEdit.id === comment.id
+                                ?
+                                    <CommentTextarea
+                                        comment={comment}
+                                        onPost={this.onSave}
+                                        onCancel={this.onCancelEdit}
+                                    />
+                                :
+                                    <Comment
+                                        d2={d2}
+                                        comment={comment}
+                                        showActions={userCanManage(d2, comment)}
+                                        onEdit={() => this.onEdit(comment)}
+                                        onDelete={() => this.onDelete(comment)}
+                                    />
+                            }
+                        </WithAvatar>
+                    )}
+                </div>
             </div>
         );
     }

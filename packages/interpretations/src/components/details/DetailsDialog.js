@@ -25,6 +25,7 @@ class DetailsDialog extends Component {
         super(props);
         const { name, description } = props.model;
         this.state = { name, description };
+        this.onSave = this.onSave.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -33,7 +34,7 @@ class DetailsDialog extends Component {
     }
 
     onSave() {
-        const newModel = this.props.model.clone();
+        const newModel = this.props.model;
         Object.assign(newModel, this.state);
         this.props.onSave(newModel);
     }
@@ -51,11 +52,7 @@ class DetailsDialog extends Component {
                 {d2.i18n.getTranslation('cancel')}
             </Button>,
 
-            <Button
-                color="primary"
-                disabled={false}
-                onClick={this.onSave.bind(this)}
-            >
+            <Button color="primary" disabled={false} onClick={this.onSave}>
                 {d2.i18n.getTranslation('save')}
             </Button>,
         ];
@@ -67,6 +64,7 @@ class DetailsDialog extends Component {
                 onRequestClose={onClose}
                 actions={actions}
                 contentStyle={styles.dialog}
+                className="details-dialog"
             >
                 <TextField
                     name="name"
