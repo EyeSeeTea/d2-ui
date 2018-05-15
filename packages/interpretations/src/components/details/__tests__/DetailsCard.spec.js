@@ -66,7 +66,6 @@ const baseProps = {
 };
 
 const renderComponent = (partialProps = {}) => {
-    debugger;
     const { intl } = new IntlProvider({ locale: 'en' }, {}).getChildContext();
     const props = { ...baseProps, ...partialProps, intl };
     return shallow(<DetailsCard.WrappedComponent {...props} />, { context, childContextTypes });

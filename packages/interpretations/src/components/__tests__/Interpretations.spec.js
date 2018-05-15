@@ -117,7 +117,6 @@ describe('Interpretations: Interpretations component', () => {
 
         describe("on a request to change current interpretation", () => {
             beforeEach(() => {
-                debugger
                 interpretationsComponent.update();
                 interpretationsComponent.find("InterpretationsCard").props().onCurrentInterpretationChange("new-interpretation");
             });
