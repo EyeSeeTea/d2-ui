@@ -8,6 +8,23 @@ const defaultStyle = 'light_blue';
 const defaultStylesheetUrl = 'light_blue/light_blue.css';
 const stylesLocation = 'dhis-web-commons/css';
 
+function AppTitle({showAppTitle, linkStyle}) {
+    const app = showAppTitle && d2.system.installedApps.find(app => app.key === showAppTitle);
+
+    if (!app) {
+        return null;
+    } else {
+        return (
+            <span>
+                &nbsp;-&nbsp;
+                <a href={app.launchUrl} title={app.description} style={linkStyle} className="title-link">
+                    {app.name}
+                </a>
+            </span>
+        );
+    }
+}
+
 function islocalStorageSupported() {
     try {
         localStorage.setItem('dhis2.menu.localstorage.test', 'dhis2.menu.localstorage.test');
@@ -194,6 +211,8 @@ const InnerHeader = React.createClass({
                     <a href={linkHref} title={this.state.headerBar.title} style={linkStyle} className="title-link">
                         {this.state.headerBar.title}
                     </a>
+                    
+                    <AppTitle showAppTitle={this.props.showAppTitle} linkStyle={linkStyle} />
                 </div>
             </div>
         );
