@@ -5,6 +5,7 @@ import OrgUnitSelectByGroup from './OrgUnitSelectByGroup.component';
 import OrgUnitSelectAll from './OrgUnitSelectAll.component';
 import TextField from 'material-ui/TextField/TextField';
 import RaisedButton from 'material-ui/FlatButton/FlatButton';
+import Card from 'material-ui/Card/Card';
 import Action from '../action/Action';
 import { Observable } from 'rx';
 import { config } from 'd2/lib/d2';
@@ -109,8 +110,7 @@ export default class OrganisationUnitTreeMultiSelect extends React.Component {
 
     renderRoots() {
         const treeWrapperStyle = {
-            minHeight: 300,
-            maxHeight: 450,
+            height: 349,
             minWidth: 350,
             maxWidth: 480,
             overflow: 'auto',
@@ -164,7 +164,8 @@ export default class OrganisationUnitTreeMultiSelect extends React.Component {
         }
 
         const controlStyles = {
-            width: 475,
+            width: 500,
+            height: 360,
             zIndex: 1,
             background: 'white',
             marginLeft: '1rem',
@@ -172,7 +173,7 @@ export default class OrganisationUnitTreeMultiSelect extends React.Component {
             display: 'inline-block',
         };
         const helpStyles = {
-            width: 475,
+            width: 500,
             zIndex: 1,
             background: 'white',
             marginLeft: '1rem',
@@ -204,7 +205,11 @@ export default class OrganisationUnitTreeMultiSelect extends React.Component {
                 top: 3,
                 marginLeft: 16,
                 boxShadow: '0px 1px 6px rgba(0, 0, 0, 0.12), 0px 1px 4px rgba(0, 0, 0, 0.12)',
-            }
+            },
+            card: {
+                padding: "10px 10px",
+                boxShadow: 'rgba(0, 0, 0, 0.117647) 0px 1px 2px, rgba(0, 0, 0, 0.117647) 0px 1px 4px',
+            },
         };
         style.button1 = Object.assign({}, style.button, { marginLeft: 0 });
         
@@ -227,46 +232,49 @@ export default class OrganisationUnitTreeMultiSelect extends React.Component {
                 {this.renderRoots()}
                 {this.state.orgUnitGroups && this.state.orgUnitLevels && (
                     <div style={controlStyles}>
+                        <Card style={style.card}>
+                            <span>
+                                {this.context.d2.i18n.getTranslation('for_all_organisation_units')}
+                                <span style={currentRootStyle}>{this.context.d2.i18n.getTranslation('tree')}</span>:
+                            </span>
+                            <div style={controlOverlayStyles}></div>
+                            <div style={{ marginTop: 8, marginBottom: 16 }}>
+                                <RaisedButton onClick={this._selectAll} label={getTranslation('select_all_in_tree')} style={style.button1}/>
+                                <RaisedButton onClick={this._deselectAll} label={getTranslation('deselect_all_in_tree')} style={style.button}/>
+                            </div>
+                        </Card>
 
-                        <span>
-                            {this.context.d2.i18n.getTranslation('for_all_organisation_units')}
-                            <span style={currentRootStyle}>{this.context.d2.i18n.getTranslation('tree')}</span>:
-                        </span>
-                        <div style={controlOverlayStyles}></div>
-                        <div style={{ marginTop: 8, marginBottom: 16 }}>
-                            <RaisedButton onClick={this._selectAll} label={getTranslation('select_all_in_tree')} style={style.button1}/>
-                            <RaisedButton onClick={this._deselectAll} label={getTranslation('deselect_all_in_tree')} style={style.button}/>
-                        </div>
-
-                        {this.state.currentRoot
-                            ? (
-                                <span>{this.context.d2.i18n.getTranslation('for_organisation_units_within')}
-                                    <span style={currentRootStyle}>{this.state.currentRoot.displayName}</span>:
-                                </span>
-                            ) : (
-                                <span>{this.context.d2.i18n.getTranslation('select_a_parent_organisation_unit')}</span>
-                            )
-                        }
-                        <div style={controlOverlayStyles}></div>
-                        <OrgUnitSelectByLevel
-                            levels={this.state.orgUnitLevels}
-                            selected={this.state.selectedOrgUnits}
-                            currentRoot={this.state.currentRoot}
-                            onUpdateSelection={this._setSelection}
-                        />
-                        <OrgUnitSelectByGroup
-                            groups={this.state.orgUnitGroups}
-                            selected={this.state.selectedOrgUnits}
-                            currentRoot={this.state.currentRoot}
-                            onUpdateSelection={this._setSelection}
-                        />
-                        <div>
-                            <OrgUnitSelectAll
+                        <Card style={{...style.card, marginTop: 10}}>
+                            {this.state.currentRoot
+                                ? (
+                                    <span>{this.context.d2.i18n.getTranslation('for_organisation_units_within')}
+                                        <span style={currentRootStyle}>{this.state.currentRoot.displayName}</span>:
+                                    </span>
+                                ) : (
+                                    <span>{this.context.d2.i18n.getTranslation('select_a_parent_organisation_unit')}</span>
+                                )
+                            }
+                            <div style={controlOverlayStyles}></div>
+                            <OrgUnitSelectByLevel
+                                levels={this.state.orgUnitLevels}
                                 selected={this.state.selectedOrgUnits}
                                 currentRoot={this.state.currentRoot}
                                 onUpdateSelection={this._setSelection}
                             />
-                        </div>
+                            <OrgUnitSelectByGroup
+                                groups={this.state.orgUnitGroups}
+                                selected={this.state.selectedOrgUnits}
+                                currentRoot={this.state.currentRoot}
+                                onUpdateSelection={this._setSelection}
+                            />
+                            <div>
+                                <OrgUnitSelectAll
+                                    selected={this.state.selectedOrgUnits}
+                                    currentRoot={this.state.currentRoot}
+                                    onUpdateSelection={this._setSelection}
+                                />
+                            </div>
+                        </Card>
                     </div>
                 )}
             </div>
