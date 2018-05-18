@@ -15,6 +15,7 @@ export default createClass({
         objectsToShare: PropTypes.arrayOf(PropTypes.object).isRequired,
         onRequestClose: PropTypes.func.isRequired,
         onError: PropTypes.func,
+        onSave: PropTypes.func,
     },
 
     mixins: [Translate],
@@ -52,6 +53,7 @@ export default createClass({
                 <Sharing
                     objectsToShare={this.props.objectsToShare}
                     onError={this.onError}
+                    onSave={this.props.onSave}
                 />
             </Dialog>
         );
