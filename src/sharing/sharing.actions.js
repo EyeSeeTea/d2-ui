@@ -9,6 +9,7 @@ const actions = Action.createActionsFromNames([
     'publicAccessChanged',
     'userGroupAcessesChanged',
     'saveChangedState',
+    'onSave',
 ]);
 
 actions.loadObjectSharingState
@@ -122,14 +123,15 @@ function saveSharingToServer(action) {
                     .then(({ httpStatus, message }) => {
                         if (httpStatus === 'OK') {
                             action.complete(message);
+                            return {sharing: sharingState, success: true};
                         } else {
                             action.error(message);
+                            return {sharing: sharingState, success: false};
                         }
-                        return message;
                     })
                     .catch(({ message }) => {
                         action.error(message);
-                        return message;
+                        return {sharing: sharingState, success: false};
                     });
             });
         });
@@ -139,7 +141,11 @@ actions.saveChangedState
     .debounce(500)
     .map(saveSharingToServer)
     .concatAll()
-    .subscribe(() => {
+    .subscribe(responses => {
+        const savedSharings = responses.filter(res => res.success).map(res => res.sharing);
+        if (!_(savedSharings).isEmpty()) {
+            actions.onSave(savedSharings);
+        }
         actions.loadObjectSharingState(sharingStore.getState().map(sharingState => sharingState.model));
     });
 

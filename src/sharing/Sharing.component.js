@@ -25,6 +25,7 @@ export default createClass({
             user: PropTypes.object.isRequired,
         })).isRequired,
         onError: PropTypes.func,
+        onSave: PropTypes.func,
     },
 
     contextTypes: {
@@ -44,6 +45,12 @@ export default createClass({
                 this.props.onError && this.props.onError(error);
                 log.error(error.message);
             });
+        this.onSaveDisposable = sharingActions.onSave
+            .subscribe(({data: savedSharings}) => {
+                if (this.props.onSave) {
+                    this.props.onSave(savedSharings);
+                }
+            })
 
         this.disposable = sharingStore
             .subscribe((newState) => {
@@ -59,6 +66,7 @@ export default createClass({
 
     componentWillUnmount() {
         this.disposable && this.disposable.dispose();
+        this.onSaveDisposable && this.onSaveDisposable.dispose();
     },
 
     getTitle(objects, maxShown = 2) {
