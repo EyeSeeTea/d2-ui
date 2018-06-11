@@ -15,8 +15,9 @@ config.i18n.strings.add('delete_comment_confirmation');
 
 const Comment = ({ d2, comment, showActions, onEdit, onDelete }) => (
     <div>
-        <div style={styles.commentText}>
-            {comment.text}
+        <style>{styles.richTextCss}</style>
+
+        <div className="richText" style={styles.commentText} dangerouslySetInnerHTML={{__html: comment.text}}>
         </div>
 
         <span style={styles.tipText}>

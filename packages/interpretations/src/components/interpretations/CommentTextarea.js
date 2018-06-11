@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { Link, ActionSeparator } from './misc';
 import { config } from 'd2/lib/d2';
 import styles from './InterpretationsStyles.js';
+import CKEditor from '../CKEditor';
 
 config.i18n.strings.add('post_comment');
 config.i18n.strings.add('ok');
@@ -17,16 +18,17 @@ class CommentTextarea extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = { text: props.comment.text || "" };
+        this.state = { text: props.comment.text || "", refresh: new Date() };
         this.onPost = this.onPost.bind(this);
+        this.onChange = this.onChange.bind(this);
     }
 
-    componentWillReceiveProps(nextProps) {
-        this.setState({ text: nextProps.comment.text });
+    componentWillReceiveProps(newProps) {
+        this.setState({ text: newProps.comment.text });
     }
 
-    onChange(ev) {
-        this.setState({ text: ev.target.value });
+    onChange(newText) {
+        this.setState({ text: newText });
     }
 
     onPost() {
@@ -35,20 +37,27 @@ class CommentTextarea extends React.Component {
             const newComment = this.props.comment;
             newComment.text = newText;
             this.props.onPost(newComment);
-            this.setState({ text: "" });
+            this.setState({ text: "", refresh: new Date() });
         }
     }
+
 
     render() {
         const { d2 } = this.context;
         const { comment, onCancel } = this.props;
-        const { text } = this.state;
+        const { text, refresh } = this.state;
         const postText = onCancel ? d2.i18n.getTranslation("ok") : d2.i18n.getTranslation('post_comment');
 
         return (
             <div>
-                <textarea style={styles.commentArea} value={text} rows={4} onChange={ev => this.onChange(ev)} />
+                <CKEditor
+                    onEditorChange={this.onChange}
+                    initialContent={text}
+                    refresh={refresh}
+                />
+
                 <Link disabled={!text} label={postText} onClick={this.onPost} />
+
                 {onCancel &&
                     <span>
                         <ActionSeparator />
