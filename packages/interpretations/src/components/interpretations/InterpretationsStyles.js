@@ -80,10 +80,19 @@ export default {
         "display": "inline-block",
     },
 
-    interpretationText: {
+    interpretationTextWrapper: {
         "marginBottom": 5,
         "marginLeft": 0,
         "marginTop": 5,
+    },
+
+    interpretationTextLimited: {
+        "display": "block",
+        "textOverflow": "ellipsis",
+        "wordWrap": "break-word",
+        "overflow": "hidden",
+        "maxHeight": "3.0em",
+        "lineHeight": "1.5em",
     },
 
     interpretationsCard: {

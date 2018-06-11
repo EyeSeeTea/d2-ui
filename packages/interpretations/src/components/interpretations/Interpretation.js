@@ -19,11 +19,6 @@ config.i18n.strings.add('unlike');
 config.i18n.strings.add('people_like_this');
 config.i18n.strings.add('people_commented');
 
-const EllipsisText = ({ max, text }) => {
-    const finalText = text && text.length > max ? `${text.slice(0, max)} ...` : text;
-    return <span>{finalText}</span>;
-};
-
 class Interpretation extends React.Component {
     state = {
         interpretationToEdit: null,
@@ -123,9 +118,12 @@ class Interpretation extends React.Component {
                         </span>
                     </div>
 
-                    <div style={styles.interpretationText}>
-                        <div>
-                            <EllipsisText max={200} text={interpretation.text} />
+                    <div style={styles.interpretationTextWrapper}>
+                        <style>{styles.richTextCss}</style>
+                        
+                        <div className="richText"
+                            style={extended ? {} : styles.interpretationTextLimited}
+                            dangerouslySetInnerHTML={{__html: interpretation.text}}>
                         </div>
                     </div>
 

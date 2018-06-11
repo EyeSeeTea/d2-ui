@@ -41,7 +41,6 @@ class CommentTextarea extends React.Component {
         }
     }
 
-
     render() {
         const { d2 } = this.context;
         const { comment, onCancel } = this.props;

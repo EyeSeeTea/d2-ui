@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { noop } from 'lodash/fp';
+import { noop, some } from 'lodash/fp';
 import log from 'loglevel';
 import { Observable } from 'rxjs';
 
@@ -15,7 +15,7 @@ import { Observable } from 'rxjs';
 
 export default class CKEditor extends Component {
     static editorCss = `
-        body { margin: 0; margin-left: 5px; font-family: Helvetica !important; font-size: 11px !important; }
+        body { margin: 0; margin-left: 5px; font-family: Helvetica !important; font-size: 14px !important; }
         p { margin: 0px; line-height: auto; }
         img { width: 1.3em; height: 1.3em; }
     `;
@@ -69,13 +69,13 @@ export default class CKEditor extends Component {
     }
 
     componentWillReceiveProps(newProps) {
-      if (this.editor && newProps.refresh !== this.props.refresh) {
-        this.editor.setData(newProps.initialContent);
-      }
+        if (this.editor && newProps.refresh !== this.props.refresh) {
+            this.editor.setData(newProps.initialContent);
+        }
     }
 
     componentDidMount() {
-        const { onEditorChange = noop, onEditorInitialized = noop } = this.props;
+        const { onEditorChange = noop, onEditorInitialized = noop, options = {} } = this.props;
         const { editorCss } = this.constructor;
 
         if (!window.CKEDITOR) {
@@ -86,7 +86,7 @@ export default class CKEditor extends Component {
             CKEDITOR.addCss(editorCss);
         }
 
-        this.editor = window.CKEDITOR.replace(this.editorContainer, {
+        const defaultOptions = {
             plugins: [
                 'link', 'smiley', 'toolbar', 'undo', 'wysiwygarea',
             ].join(','),
@@ -105,7 +105,8 @@ export default class CKEditor extends Component {
             allowedContent: true,
             extraPlugins: 'div',
             height: 80,
-        });
+        };
+        this.editor = window.CKEDITOR.replace(this.editorContainer, {...defaultOptions, ...options});
 
         this.editor.setData(this.props.initialContent);
         this.editor.on("dialogShow", this._onDialogShow.bind(this));
@@ -144,16 +145,13 @@ export default class CKEditor extends Component {
     _onDocumentClick(ev) {
         if (!this.dialog)
             return;
-        const cke_dialog = document.getElementsByClassName("cke_dialog")[0];
-        if (!cke_dialog)
-            return;
         let parents = [];
         let el = ev.target;
         while (el) {
             parents.push(el);
             el = el.parentElement;
         }
-        const clickInsideDialog = parents.indexOf(cke_dialog) >= 0;
+        const clickInsideDialog = some(node => node.classList.contains("cke_dialog"), parents);
         if (!clickInsideDialog) {
             this.dialog.hide();
         }
@@ -202,6 +200,10 @@ export default class CKEditor extends Component {
 }
 
 CKEditor.propTypes = {
+    /**
+     * Object to be passet to CKEditor.replace.
+     */
+    options: PropTypes.object,
     /**
      * Change handler that will be called when the content of the editor changed.
      */
