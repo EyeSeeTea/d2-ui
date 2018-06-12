@@ -36,8 +36,8 @@ describe('Interpretations: Interpretations -> CommentTextarea component', () => 
             commentTextarea = renderComponent({onPost: jest.fn(), onCancel: undefined});
         });
 
-        it('should render a textarea with the comment text', () => {
-            expect(commentTextarea.find("textarea")).toHaveProp("value", comment.text)
+        it('should render a CKEditor with the comment text', () => {
+            expect(commentTextarea.find("CKEditor")).toHaveProp("initialContent", comment.text)
         });
 
         it('should render a post link', () => {
@@ -52,7 +52,7 @@ describe('Interpretations: Interpretations -> CommentTextarea component', () => 
 
         describe("when post is clicked with new text on textarea", () => {
             beforeEach(() => {
-                commentTextarea.find("textarea").simulate('change', {target: {value: "new text"}});
+                commentTextarea.find("CKEditor").props().onEditorChange("new text");
                 const links = commentTextarea.find("Link");
                 const postLink = links.findWhere(link => link.props().label === "post_comment_translated");
                 postLink.simulate("click");
@@ -76,7 +76,7 @@ describe('Interpretations: Interpretations -> CommentTextarea component', () => 
         });
 
         it('should render a textarea with the comment text', () => {
-            expect(commentTextarea.find("textarea")).toHaveProp("value", comment.text)
+            expect(commentTextarea.find("CKEditor")).toHaveProp("initialContent", comment.text)
         });
 
         it('should render an ok link', () => {
@@ -101,7 +101,7 @@ describe('Interpretations: Interpretations -> CommentTextarea component', () => 
                     .simulate("click");
             });
 
-            it("should call onCancel with the updated comment", () => {
+            it("should call onCancel", () => {
                 const onCancel = commentTextarea.instance().props.onCancel;
                 expect(onCancel).toHaveBeenCalledTimes(1);
             });
@@ -125,8 +125,8 @@ describe('Interpretations: Interpretations -> CommentTextarea component', () => 
                 }));
             });
 
-            it("should clear the textarea", () => {
-                expect(commentTextarea.find("textarea")).toHaveProp("value", "");
+            it("should clear the CKEditor", () => {
+                expect(commentTextarea.find("CKEditor")).toHaveProp("initialContent", "");
             });
         });
     });

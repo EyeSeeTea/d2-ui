@@ -14,6 +14,27 @@ import { Observable } from 'rxjs';
 */
 
 export default class CKEditor extends Component {
+    static defaultOptions = {
+        plugins: [
+            'link', 'smiley', 'toolbar', 'undo', 'wysiwygarea',
+        ].join(','),
+        removePlugins: 'scayt,wsc,about,elementspath',
+        toolbar: [
+            {name: 'actions', items: ['Link', 'Smiley']},
+        ],
+        smiley_images: [
+            'regular_smile.png',
+            'sad_smile.png',
+            'wink_smile.png',
+            'thumbs_down.png',
+            'thumbs_up.png'
+        ],
+        resize_enabled: false,
+        allowedContent: true,
+        extraPlugins: 'div',
+        height: 80,
+    };
+
     static editorCss = `
         body { margin: 0; margin-left: 5px; font-family: Helvetica !important; font-size: 14px !important; }
         p { margin: 0px; line-height: auto; }
@@ -85,28 +106,9 @@ export default class CKEditor extends Component {
         if (!CKEDITOR.getCss().includes(editorCss)) {
             CKEDITOR.addCss(editorCss);
         }
-
-        const defaultOptions = {
-            plugins: [
-                'link', 'smiley', 'toolbar', 'undo', 'wysiwygarea',
-            ].join(','),
-            removePlugins: 'scayt,wsc,about,elementspath',
-            toolbar: [
-                {name: 'actions', items: ['Link', 'Smiley']},
-            ],
-            smiley_images: [
-                'regular_smile.png',
-                'sad_smile.png',
-                'wink_smile.png',
-                'thumbs_down.png',
-                'thumbs_up.png'
-            ],
-            resize_enabled: false,
-            allowedContent: true,
-            extraPlugins: 'div',
-            height: 80,
-        };
-        this.editor = window.CKEDITOR.replace(this.editorContainer, {...defaultOptions, ...options});
+        
+        const fullOptions = {...this.constructor.defaultOptions, ...options};
+        this.editor = window.CKEDITOR.replace(this.editorContainer, fullOptions);
 
         this.editor.setData(this.props.initialContent);
         this.editor.on("dialogShow", this._onDialogShow.bind(this));
@@ -158,7 +160,7 @@ export default class CKEditor extends Component {
     }
 
     _setDialogPosition(editor, dialog) {
-        const buttonObj = this.editor.toolbar[0].items.find(item => item.name == "smiley");
+        const buttonObj = editor.toolbar[0].items.find(item => item.name == "smiley");
         if (dialog._.name != "smiley" || !buttonObj)
             return;
         const button = document.getElementById(buttonObj._.id);
@@ -192,8 +194,8 @@ export default class CKEditor extends Component {
     render() {
         return (
             <div>
-                <textarea ref={this.setContainerRef.bind(this)} />
                 <style>{this.constructor.externalCss}</style>
+                <textarea ref={this.setContainerRef.bind(this)} />
             </div>
         );
     }

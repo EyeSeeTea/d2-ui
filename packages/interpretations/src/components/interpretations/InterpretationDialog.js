@@ -33,7 +33,7 @@ class InterpretationDialog extends Component {
         // are removed from the DOM (bug in mui?), which triggers errors in CKEditor.destroy.
         // Workaround: Manually unmount the component using a flag in state.
         return (...args) =>
-            this.setState({ showEditor: false }, () => _.defer(() => fn(...args)));
+            this.setState({ showEditor: false }, () => defer(() => fn(...args)));
     }
 
     _cancel() {
