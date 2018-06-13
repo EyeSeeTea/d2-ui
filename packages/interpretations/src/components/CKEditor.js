@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { noop, some } from 'lodash/fp';
 import log from 'loglevel';
-import { Observable } from 'rxjs';
 
 /* Additions from standard CKEditor:
 
@@ -12,6 +11,80 @@ import { Observable } from 'rxjs';
     - Dock position of smiley dialog to button
     - Hide dialogs on click outside dialog.
 */
+
+/* Get absolute position of element considering parents with style position=relative (modal) */
+function getAbsolutePosition(el) {
+    const rect = el.getBoundingClientRect();
+    let offsetLeft = 0, offsetTop = 0;
+    let parent = el.parentNode;
+
+    while (parent) {
+        if (parent.style && parent.style.position === "relative") {
+            const bbox = parent.getBoundingClientRect();
+            offsetLeft -= bbox.left || 0;
+            offsetTop -= bbox.top || 0;
+        }
+        parent = parent.parentNode;
+    }
+
+    return {top: rect.top + offsetTop, left: rect.left + offsetLeft};
+}
+
+class WrappedEditor {
+    constructor(editor) {
+        this.editor = editor;
+    }
+
+    getValue() {
+        return this.editor.getData();
+    }
+
+    getPosition(offset = null) {
+        const range = this.editor.getSelection().getRanges()[0];
+        const bbox = range ? range.startContainer.$.parentNode.getBoundingClientRect() : {top: 0, left: 0};
+        const iframe = this.editor.container.$.getElementsByTagName("iframe")[0];
+        const iframeBbox = getAbsolutePosition(iframe);
+        const pos = { top: bbox.top + iframeBbox.top, left: bbox.left + iframeBbox.left };
+        return offset ? { top: pos.top + offset.top, left: pos.left + offset.left } : pos;
+    }
+
+    getCurrentWord() {
+        const range = this.editor.getSelection().getRanges()[0];
+        if (range) {
+            const text = range.startContainer.type === CKEDITOR.NODE_TEXT ? range.startContainer.getText() : "";
+            const startOffset = range.startOffset;
+            return text.slice(0, startOffset).split(/\s+/).slice(-1)[0].replace(/[^\x00-\x7F]/g, "");
+        } else {
+            return "";
+        }
+    }
+
+    replaceCurrentWord(newText) {
+        const range = this.editor.getSelection().getRanges()[0];
+        if (range) {
+            // Replace current word
+            const container = range.startContainer.$;
+            const text = container.textContent;
+            const startOffset = range.startOffset;
+            const index = text.slice(0, startOffset).lastIndexOf(" ");
+            const before = text.slice(0, index + 1);
+            const after = text.slice(startOffset, -1);
+            const containerText = before + newText + "\xA0" + after.replace(/^\s+/, '');
+            container.textContent = containerText;
+
+            // Move to the end of word
+            const newRange = this.editor.createRange();
+            const newOffset = (before + newText).length + 1;
+            newRange.setStart(range.startContainer, newOffset);
+            newRange.setEnd(range.startContainer, newOffset);
+            this.editor.getSelection().selectRanges([newRange]);
+
+            return containerText;
+        } else {
+            return null;
+        }
+    }
+}
 
 export default class CKEditor extends Component {
     static defaultOptions = {
@@ -87,6 +160,7 @@ export default class CKEditor extends Component {
     constructor(props, context) {
         super(props, context);
         this._onDocumentClick = this._onDocumentClick.bind(this);
+        this.setContainerRef = this.setContainerRef.bind(this);
     }
 
     componentWillReceiveProps(newProps) {
@@ -96,7 +170,7 @@ export default class CKEditor extends Component {
     }
 
     componentDidMount() {
-        const { onEditorChange = noop, onEditorInitialized = noop, options = {} } = this.props;
+        const { onEditorChange = noop, onEditorInitialized = noop, options = {}, onEditorKey } = this.props;
         const { editorCss } = this.constructor;
 
         if (!window.CKEDITOR) {
@@ -106,7 +180,7 @@ export default class CKEditor extends Component {
         if (!CKEDITOR.getCss().includes(editorCss)) {
             CKEDITOR.addCss(editorCss);
         }
-        
+
         const fullOptions = {...this.constructor.defaultOptions, ...options};
         this.editor = window.CKEDITOR.replace(this.editorContainer, fullOptions);
 
@@ -114,9 +188,15 @@ export default class CKEditor extends Component {
         this.editor.on("dialogShow", this._onDialogShow.bind(this));
         this.editor.on("dialogHide", this._onDialogHide.bind(this));
         this.editor.on('change', () => onEditorChange(this.editor.getData()));
+        if (onEditorKey)
+            this.editor.on('key', this._onEditorKey.bind(this, onEditorKey));
 
         // Callback to the parent to pass the editor instance so the parent can call functions on it like insertHTML.
-        onEditorInitialized(this.editor);
+        onEditorInitialized(new WrappedEditor(this.editor));
+    }
+
+    _onEditorKey(onEditorKey, ev) {
+        onEditorKey(ev);
     }
 
     _onDialogShow(ev) {
@@ -195,7 +275,7 @@ export default class CKEditor extends Component {
         return (
             <div>
                 <style>{this.constructor.externalCss}</style>
-                <textarea ref={this.setContainerRef.bind(this)} />
+                <textarea ref={this.setContainerRef} />
             </div>
         );
     }
@@ -203,7 +283,7 @@ export default class CKEditor extends Component {
 
 CKEditor.propTypes = {
     /**
-     * Object to be passet to CKEditor.replace.
+     * Object for CKEditor.replace.
      */
     options: PropTypes.object,
     /**
@@ -226,4 +306,6 @@ CKEditor.propTypes = {
      * set the editor contents (from props.initialContent).
      */
     refresh: PropTypes.any,
+    /* This callback will be called when a key is pressed in the editor */
+    onEditorKey: PropTypes.func,
 };

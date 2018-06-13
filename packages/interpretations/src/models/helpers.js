@@ -1,6 +1,7 @@
 import Interpretation from './interpretation';
 import pick from 'lodash/fp/pick';
 import { apiFetch } from '../util/api';
+import { getMentions } from './users';
   
 const interpretationsFields = [
     'id',
@@ -30,15 +31,20 @@ const favoriteFields = [
 export const getFavoriteWithInterpretations = (d2, type, id) => {
     const modelClass = d2.models[type];
     const api = d2.Api.getApi();
-    const getModel = modelClass.get(id, {fields: favoriteFields.join(',')})
-    const getViews = api.get(`dataStatistics/favorites/${id}`).then(json => json.views);
+    const model$ = modelClass.get(id, {fields: favoriteFields.join(',')});
+    const views$ = api.get(`dataStatistics/favorites/${id}`).then(json => json.views);
+    const mentions$ = getMentions(d2);
 
-    return Promise.all([getModel, getViews])
-        .then(([model, views]) => {
-            const modelInterpretations = model.interpretations.map(attrs => new Interpretation(model, attrs));
-            model.interpretations = modelInterpretations;
-            model.favoriteViews = views;
-            return model;
+    return Promise.all([model$, views$, mentions$])
+        .then(([model, views, mentions]) => {
+            const modelInterpretations = model.interpretations
+                .map(attrs => new Interpretation(model, attrs));
+
+            return Object.assign(model, {
+                interpretations: modelInterpretations,
+                favoriteViews: views,
+                mentions: mentions,
+            });
         });
 };
 

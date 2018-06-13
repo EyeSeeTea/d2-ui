@@ -76,7 +76,7 @@ export default class InterpretationComments extends React.Component {
     }
 
     render() {
-        const { interpretation } = this.props;
+        const { interpretation, mentions } = this.props;
         const { d2 } = this.context;
         const { commentToEdit } = this.state;
         const comments = orderBy(["created"], ["desc"], interpretation.comments);
@@ -85,7 +85,7 @@ export default class InterpretationComments extends React.Component {
         return (
             <div>
                 <WithAvatar user={d2.currentUser}>
-                    <CommentTextarea comment={newComment} onPost={this.onSave} />
+                    <CommentTextarea comment={newComment} onPost={this.onSave} mentions={mentions} />
                 </WithAvatar>
 
                 <div className="interpretation-comments">

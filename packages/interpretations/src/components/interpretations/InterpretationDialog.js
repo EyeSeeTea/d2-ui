@@ -4,7 +4,7 @@ import Dialog from 'material-ui/Dialog';
 import { Button } from '@dhis2/d2-ui-core';
 import TextField from 'material-ui/TextField';
 import { config } from 'd2/lib/d2';
-import CKEditor from '../CKEditor';
+import RichEditor from '../RichEditor';
 import defer from 'lodash/fp/defer';
 
 config.i18n.strings.add('edit_interpretation');
@@ -53,7 +53,7 @@ class InterpretationDialog extends Component {
 
     render() {
         const { d2 } = this.context;
-        const { interpretation, onSave } = this.props;
+        const { interpretation, onSave, mentions } = this.props;
         const { value, showEditor } = this.state;
         const title = interpretation && interpretation.id
             ? d2.i18n.getTranslation('edit_interpretation')
@@ -79,11 +79,15 @@ class InterpretationDialog extends Component {
                 contentStyle={styles.dialog}
                 repositionOnUpdate={false}
             >
-                {showEditor && <CKEditor
-                    options={{height: 150}}
-                    onEditorChange={this.onChange}
-                    initialContent={value}
-                />}
+                {showEditor &&
+                    <RichEditor
+                        options={{height: 150}}
+                        initialContent={value}
+                        onEditorChange={this.onChange}
+                        mentions={mentions}
+                        i18n={d2.i18n.translations}
+                    />
+                }
             </Dialog>
         );
     }

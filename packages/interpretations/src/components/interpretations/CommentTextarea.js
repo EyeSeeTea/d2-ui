@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { Link, ActionSeparator } from './misc';
 import { config } from 'd2/lib/d2';
 import styles from './InterpretationsStyles.js';
-import CKEditor from '../CKEditor';
+import RichEditor from '../RichEditor';
 
 config.i18n.strings.add('post_comment');
 config.i18n.strings.add('ok');
@@ -14,6 +14,7 @@ class CommentTextarea extends React.Component {
         comment: PropTypes.object.isRequired,
         onPost: PropTypes.func.isRequired,
         onCancel: PropTypes.func,
+        mentions: PropTypes.object,
     };
 
     constructor(props) {
@@ -43,16 +44,18 @@ class CommentTextarea extends React.Component {
 
     render() {
         const { d2 } = this.context;
-        const { comment, onCancel } = this.props;
+        const { comment, onCancel, mentions } = this.props;
         const { text, refresh } = this.state;
         const postText = onCancel ? d2.i18n.getTranslation("ok") : d2.i18n.getTranslation('post_comment');
 
         return (
             <div>
-                <CKEditor
+                <RichEditor
                     onEditorChange={this.onChange}
                     initialContent={text}
                     refresh={refresh}
+                    mentions={mentions}
+                    i18n={d2.i18n.translations}
                 />
 
                 <Link disabled={!text} label={postText} onClick={this.onPost} />

@@ -90,7 +90,7 @@ class Interpretation extends React.Component {
     }
 
     render() {
-        const { interpretation, extended } = this.props;
+        const { interpretation, extended, mentions } = this.props;
         const { interpretationToEdit } = this.state;
         const { d2 } = this.context;
         const showActions = extended;
@@ -106,6 +106,7 @@ class Interpretation extends React.Component {
                         interpretation={interpretationToEdit}
                         onSave={this.saveInterpretationAndClose}
                         onClose={this.closeInterpretationDialog}
+                        mentions={mentions}
                     />
                 }
 
@@ -162,6 +163,7 @@ class Interpretation extends React.Component {
                                     interpretation={interpretation}
                                     onSave={this.saveComment}
                                     onDelete={this.deleteComment}
+                                    mentions={mentions}
                                 />}
                         </div>
                     </div>
