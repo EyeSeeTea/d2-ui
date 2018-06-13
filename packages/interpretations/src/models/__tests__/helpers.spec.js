@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { getFavoriteWithInterpretations } from '../helpers';
-import Intepretation from '../interpretation';
+import Interpretation from '../interpretation';
 import { getStubContext } from '../../../../../config/inject-theme';
 
 const context = getStubContext();
@@ -60,7 +60,7 @@ describe("getFavoriteWithInterpretations", () => {
         it("should have wrapped interpretations", () => {
             expect(favorite.interpretations).toHaveLength(favorite.interpretations.length);
             _(favorite.interpretations)
-                .every(interpretation => expect(interpretation).toBeInstanceOf(Intepretation));
+                .every(interpretation => expect(interpretation).toBeInstanceOf(Interpretation));
         });
     });
 });

@@ -125,6 +125,7 @@ export default class RichEditor extends Component {
 
     onEditorInitialized(editor) {
         this.editor = editor;
+        editor.setCursorAtEnd();
     }
 
     onEditorKey(ev) {

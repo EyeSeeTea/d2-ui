@@ -41,6 +41,10 @@ export default {
         "marginLeft": 4,
     },
 
+    actions: {
+        "marginBottom": 5,
+    },
+
     greyBackground: {
         "backgroundColor": "#efefef",
         "marginTop": 2,

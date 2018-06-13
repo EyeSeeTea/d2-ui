@@ -5,12 +5,12 @@ import { getMentions } from './users';
   
 const interpretationsFields = [
     'id',
-    'user[id,displayName]',
+    'user[id,displayName,userCredentials[username]]',
     'created',
     'likes',
     'likedBy[id,displayName]',
     'text',
-    'comments[id,text,created,user[id,displayName]]',
+    'comments[id,text,created,user[id,displayName,userCredentials[username]]]',
 ];
 
 const favoriteFields = [

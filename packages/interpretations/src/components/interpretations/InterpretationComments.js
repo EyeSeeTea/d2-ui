@@ -13,7 +13,7 @@ config.i18n.strings.add('edit');
 config.i18n.strings.add('delete');
 config.i18n.strings.add('delete_comment_confirmation');
 
-const Comment = ({ d2, comment, showActions, onEdit, onDelete }) => (
+const Comment = ({ d2, comment, showActions, onEdit, onDelete, onReply }) => (
     <div>
         <style>{styles.richTextCss}</style>
         
@@ -30,6 +30,8 @@ const Comment = ({ d2, comment, showActions, onEdit, onDelete }) => (
             <span>
                 <Link label={d2.i18n.getTranslation('edit')} onClick={() => onEdit(comment)} />
                 <ActionSeparator />
+                <Link label={d2.i18n.getTranslation('reply')} onClick={() => onReply(comment)} />
+                <ActionSeparator />
                 <Link label={d2.i18n.getTranslation('delete')} onClick={() => onDelete(comment)} />
             </span>}
     </div>
@@ -44,16 +46,17 @@ export default class InterpretationComments extends React.Component {
         interpretation: PropTypes.object.isRequired,
         onSave: PropTypes.func.isRequired,
         onDelete: PropTypes.func.isRequired,
-    };
-
-    state = {
-        commentToEdit: null,
+        newComment: PropTypes.object,
     };
 
     constructor(props) {
         super(props);
         this.onSave = this.onSave.bind(this);
         this.onCancelEdit = this.onCancelEdit.bind(this);
+        this.state = {
+            commentToEdit: null,
+            newComment: props.newComment,
+        };
     }
 
     onEdit(comment) {
@@ -75,19 +78,25 @@ export default class InterpretationComments extends React.Component {
         this.setState({ commentToEdit: null });
     }
 
+    onReply(comment) {
+        const text = comment.user && comment.user.userCredentials ?
+            ("@" + comment.user.userCredentials.username + "\xA0") : "";
+        const newComment = {
+            key: new Date().getTime(),
+            comment: new CommentModel(comment.interpretation, { text }),
+        };
+
+        this.setState({ commentToEdit: null, newComment });
+    }
+
     render() {
-        const { interpretation, mentions } = this.props;
         const { d2 } = this.context;
-        const { commentToEdit } = this.state;
+        const { interpretation, mentions } = this.props;
+        const { commentToEdit, newComment } = this.state;
         const comments = orderBy(["created"], ["desc"], interpretation.comments);
-        const newComment = new CommentModel(interpretation, {text: ""});
 
         return (
             <div>
-                <WithAvatar user={d2.currentUser}>
-                    <CommentTextarea comment={newComment} onPost={this.onSave} mentions={mentions} />
-                </WithAvatar>
-
                 <div className="interpretation-comments">
                     {comments.map(comment =>
                         <WithAvatar key={comment.id} user={comment.user}>
@@ -109,11 +118,23 @@ export default class InterpretationComments extends React.Component {
                                         showActions={userCanManage(d2, comment)}
                                         onEdit={() => this.onEdit(comment)}
                                         onDelete={() => this.onDelete(comment)}
+                                        onReply={() => this.onReply(comment)}
                                     />
                             }
                         </WithAvatar>
                     )}
                 </div>
+
+                {newComment &&
+                    <WithAvatar user={d2.currentUser}>
+                        <CommentTextarea
+                            key={newComment.key}
+                            comment={newComment.comment}
+                            onPost={this.onSave}
+                            mentions={mentions}
+                        />
+                    </WithAvatar>
+                }
             </div>
         );
     }

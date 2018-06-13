@@ -39,6 +39,15 @@ class WrappedEditor {
         return this.editor.getData();
     }
 
+    setCursorAtEnd() {
+        setTimeout(() => {
+            this.editor.focus();
+            const range = this.editor.createRange();
+            range.moveToElementEditEnd(range.root);
+            this.editor.getSelection().selectRanges([range]);
+        }, 200);
+    }
+
     getPosition(offset = null) {
         const range = this.editor.getSelection().getRanges()[0];
         const bbox = range ? range.startContainer.$.parentNode.getBoundingClientRect() : {top: 0, left: 0};

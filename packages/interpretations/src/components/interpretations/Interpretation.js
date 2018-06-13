@@ -10,6 +10,7 @@ import { userCanManage } from '../../util/auth';
 import { config } from 'd2/lib/d2';
 import styles from './InterpretationsStyles.js';
 import some from 'lodash/fp/some';
+import CommentModel from '../../models/comment';
 
 config.i18n.strings.add('edit');
 config.i18n.strings.add('delete');
@@ -21,6 +22,7 @@ config.i18n.strings.add('people_commented');
 
 class Interpretation extends React.Component {
     state = {
+        newComment: null,
         interpretationToEdit: null,
     };
 
@@ -32,6 +34,7 @@ class Interpretation extends React.Component {
         this.deleteInterpretation = this.deleteInterpretation.bind(this);
         this.openInterpretationDialog = this.openInterpretationDialog.bind(this);
         this.like = this.like.bind(this);
+        this.reply = this.reply.bind(this);
         this.unlike = this.unlike.bind(this);
         this.saveComment = this.saveComment.bind(this);
         this.deleteComment = this.deleteComment.bind(this);
@@ -53,6 +56,17 @@ class Interpretation extends React.Component {
 
     unlike() {
         this.saveInterpretationLike(this.props.interpretation, false);
+    }
+
+    reply() {
+        const { interpretation } = this.props;
+        const text = interpretation.user && interpretation.user.userCredentials ?
+            ("@" + interpretation.user.userCredentials.username + "\xA0") : "";
+        const newComment = {
+            key: new Date().getTime(),
+            comment: new CommentModel(interpretation, { text }),
+        };
+        this.setState({ newComment });
     }
 
     deleteInterpretation() {
@@ -91,7 +105,7 @@ class Interpretation extends React.Component {
 
     render() {
         const { interpretation, extended, mentions } = this.props;
-        const { interpretationToEdit } = this.state;
+        const { interpretationToEdit, newComment } = this.state;
         const { d2 } = this.context;
         const showActions = extended;
         const showComments = extended;
@@ -130,10 +144,12 @@ class Interpretation extends React.Component {
 
                     <div>
                         {showActions &&
-                            <div className="actions">
+                            <div className="actions" style={styles.actions}>
                                 {currentUserLikesInterpretation
                                     ? <Link label={d2.i18n.getTranslation('unlike')} onClick={this.unlike} />
                                     : <Link label={d2.i18n.getTranslation('like')} onClick={this.like} />}
+                                <ActionSeparator />
+                                <Link label={d2.i18n.getTranslation('reply')} onClick={this.reply} />
                                 {userCanManage(d2, interpretation) &&
                                     <span className="owner-actions">
                                         <ActionSeparator />
@@ -159,11 +175,13 @@ class Interpretation extends React.Component {
 
                             {showComments &&
                                 <InterpretationComments
+                                    key={newComment && newComment.key}
                                     d2={d2}
                                     interpretation={interpretation}
                                     onSave={this.saveComment}
                                     onDelete={this.deleteComment}
                                     mentions={mentions}
+                                    newComment={newComment}
                                 />}
                         </div>
                     </div>
