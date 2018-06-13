@@ -1,16 +1,18 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import Dialog from 'material-ui/Dialog';
+import { Portal } from 'react-portal';
+
 import { findIndex } from 'lodash/fp';
 import CKEditor from './CKEditor';
 
 const styles = {
     mentions: {
         position: "absolute",
-        top: 200,
-        left: 500,
         boxShadow: "rgb(136, 136, 136) 0px 0px 4px 0px",
         margin: 0,
         padding: 4,
+        zIndex: 1000000,
         backgroundColor: "#FAFFFA",
         listStyleType: "none",
     },
@@ -94,7 +96,6 @@ export default class RichEditor extends Component {
         this.setMentionsRef = this.setMentionsRef.bind(this);
         this.onDocumentClick = this.onDocumentClick.bind(this);
         this.state = {matchingUsers: [], currentUserIndex: null, splitListIndex: null, pattern: null, position: null};
-        //this.state = {matchingUsers: props.mentions.allUsers, currentUserIndex: 0, splitListIndex, pattern: "a", position: null};
     }
 
     componentDidMount () {
@@ -150,11 +151,13 @@ export default class RichEditor extends Component {
 
     onEditorChange(newValue) {
         const { mentions, onEditorChange } = this.props;
-        if (!mentions)
-            return;
-
-        const currentWord = this.editor.getCurrentWord();
         onEditorChange(newValue);
+        if (mentions)
+            this.showMentions(mentions);
+    }
+
+    showMentions(mentions) {
+        const currentWord = this.editor.getCurrentWord();
         let matchingUsers;
 
         if (currentWord.startsWith("@")) {
@@ -190,27 +193,29 @@ export default class RichEditor extends Component {
         const { i18n, ...ckeditorProps } = this.props;
         const getTitleItem = i18nKey => (
             <li key="most-mentioned" style={styles.mentionTitle}>
-                <b>{i18n.most_common_users_matching} @{pattern}</b>
+                <b>{i18n[i18nKey]} @{pattern}</b>
             </li>
         );
 
         return (
             <div>
                 {matchingUsers.length > 0 && position &&
-                    <ul style={{...styles.mentions, ...position}} ref={this.setMentionsRef}>
-                        {matchingUsers.map((user, idx) => [
-                            idx === 0 && idx !== splitListIndex && getTitleItem("most_common_users_matching"),
-                            idx === splitListIndex && getTitleItem("other_users_matching"),
-                            <UserMatch
-                                key={"user-" + user.id}
-                                pattern={pattern}
-                                isSelected={idx === currentUserIndex}
-                                user={user}
-                                onClick={this.insertUser}
-                                onMouseSelected={this.onMouseSelected}
-                            />,
-                        ])}
-                    </ul>
+                    <Portal>
+                        <ul style={{...styles.mentions, ...position}} ref={this.setMentionsRef}>
+                            {matchingUsers.map((user, idx) => [
+                                idx === 0 && idx !== splitListIndex && getTitleItem("most_common_users_matching"),
+                                idx === splitListIndex && getTitleItem("other_users_matching"),
+                                <UserMatch
+                                    key={"user-" + user.id}
+                                    pattern={pattern}
+                                    isSelected={idx === currentUserIndex}
+                                    user={user}
+                                    onClick={this.insertUser}
+                                    onMouseSelected={this.onMouseSelected}
+                                />,
+                            ])}
+                        </ul>
+                    </Portal>
                 }
 
                 <CKEditor

@@ -59,13 +59,7 @@ class Interpretation extends React.Component {
     }
 
     reply() {
-        const { interpretation } = this.props;
-        const text = interpretation.user && interpretation.user.userCredentials ?
-            ("@" + interpretation.user.userCredentials.username + "\xA0") : "";
-        const newComment = {
-            key: new Date().getTime(),
-            comment: new CommentModel(interpretation, { text }),
-        };
+        const newComment = CommentModel.getReplyForInterpretation(this.context.d2, this.props.interpretation);
         this.setState({ newComment });
     }
 
@@ -175,7 +169,6 @@ class Interpretation extends React.Component {
 
                             {showComments &&
                                 <InterpretationComments
-                                    key={newComment && newComment.key}
                                     d2={d2}
                                     interpretation={interpretation}
                                     onSave={this.saveComment}

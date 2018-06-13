@@ -25,7 +25,9 @@ class CommentTextarea extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {
-        this.setState({ text: newProps.comment.text });
+        if (this.props.comment !== newProps.comment) {
+            this.setState({ text: newProps.comment.text, refresh: new Date() });
+        }
     }
 
     onChange(newText) {
@@ -38,7 +40,7 @@ class CommentTextarea extends React.Component {
             const newComment = this.props.comment;
             newComment.text = newText;
             this.props.onPost(newComment);
-            this.setState({ text: "", refresh: new Date() });
+            this.setState({ text: "", refresh: new Date().getTime() });
         }
     }
 

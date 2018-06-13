@@ -12,24 +12,6 @@ import log from 'loglevel';
     - Hide dialogs on click outside dialog.
 */
 
-/* Get absolute position of element considering parents with style position=relative (modal) */
-function getAbsolutePosition(el) {
-    const rect = el.getBoundingClientRect();
-    let offsetLeft = 0, offsetTop = 0;
-    let parent = el.parentNode;
-
-    while (parent) {
-        if (parent.style && parent.style.position === "relative") {
-            const bbox = parent.getBoundingClientRect();
-            offsetLeft -= bbox.left || 0;
-            offsetTop -= bbox.top || 0;
-        }
-        parent = parent.parentNode;
-    }
-
-    return {top: rect.top + offsetTop, left: rect.left + offsetLeft};
-}
-
 class WrappedEditor {
     constructor(editor) {
         this.editor = editor;
@@ -43,16 +25,19 @@ class WrappedEditor {
         setTimeout(() => {
             this.editor.focus();
             const range = this.editor.createRange();
-            range.moveToElementEditEnd(range.root);
-            this.editor.getSelection().selectRanges([range]);
-        }, 200);
+            const selection = this.editor.getSelection();
+            if (range && selection) {
+                range.moveToElementEditEnd(range.root);
+                this.editor.getSelection().selectRanges([range]);
+            }
+        }, 300);
     }
 
     getPosition(offset = null) {
         const range = this.editor.getSelection().getRanges()[0];
         const bbox = range ? range.startContainer.$.parentNode.getBoundingClientRect() : {top: 0, left: 0};
         const iframe = this.editor.container.$.getElementsByTagName("iframe")[0];
-        const iframeBbox = getAbsolutePosition(iframe);
+        const iframeBbox = iframe.getBoundingClientRect();
         const pos = { top: bbox.top + iframeBbox.top, left: bbox.left + iframeBbox.left };
         return offset ? { top: pos.top + offset.top, left: pos.left + offset.left } : pos;
     }
@@ -175,6 +160,8 @@ export default class CKEditor extends Component {
     componentWillReceiveProps(newProps) {
         if (this.editor && newProps.refresh !== this.props.refresh) {
             this.editor.setData(newProps.initialContent);
+            const wrappedEditor = new WrappedEditor(this.editor);
+            wrappedEditor.setCursorAtEnd();
         }
     }
 

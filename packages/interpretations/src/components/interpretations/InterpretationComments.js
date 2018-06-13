@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, ActionSeparator, WithAvatar, getUserLink } from './misc';
 import CommentTextarea from './CommentTextarea';
 import { userCanManage } from '../../util/auth';
+import { Button } from '@dhis2/d2-ui-core';
 import { FormattedRelative } from 'react-intl';
 import PropTypes from 'prop-types';
 import CommentModel from '../../models/comment';
@@ -13,7 +14,7 @@ config.i18n.strings.add('edit');
 config.i18n.strings.add('delete');
 config.i18n.strings.add('delete_comment_confirmation');
 
-const Comment = ({ d2, comment, showActions, onEdit, onDelete, onReply }) => (
+const Comment = ({ d2, comment, showManageActions, onEdit, onDelete, onReply }) => (
     <div>
         <style>{styles.richTextCss}</style>
         
@@ -26,14 +27,17 @@ const Comment = ({ d2, comment, showActions, onEdit, onDelete, onReply }) => (
 
         <ActionSeparator labelText="" />
 
-        {showActions &&
+        {showManageActions ?
             <span>
-                <Link label={d2.i18n.getTranslation('edit')} onClick={() => onEdit(comment)} />
+                <Link label={d2.i18n.getTranslation('edit')} value={comment} onClick={onEdit} />
                 <ActionSeparator />
-                <Link label={d2.i18n.getTranslation('reply')} onClick={() => onReply(comment)} />
+                <Link label={d2.i18n.getTranslation('reply')} value={comment} onClick={onReply} />
                 <ActionSeparator />
-                <Link label={d2.i18n.getTranslation('delete')} onClick={() => onDelete(comment)} />
-            </span>}
+                <Link label={d2.i18n.getTranslation('delete')} value={comment} onClick={onDelete} />
+            </span>
+            :
+            <Link label={d2.i18n.getTranslation('reply')} value={comment} onClick={onReply} />
+        }
     </div>
 );
 
@@ -52,11 +56,28 @@ export default class InterpretationComments extends React.Component {
     constructor(props) {
         super(props);
         this.onSave = this.onSave.bind(this);
+        this.onUpdate = this.onUpdate.bind(this);
+        this.onEdit = this.onEdit.bind(this);
+        this.onDelete = this.onDelete.bind(this);
+        this.onReply = this.onReply.bind(this);
+        this.onShowMoreComments = this.onShowMoreComments.bind(this);
         this.onCancelEdit = this.onCancelEdit.bind(this);
+
         this.state = {
             commentToEdit: null,
             newComment: props.newComment,
+            showOnlyFirstComments: true,
         };
+    }
+
+    componentWillReceiveProps(newProps) {
+        if (this.props.newComment !== newProps.newComment) {
+            this.setState({ newComment: newProps.newComment });
+        }
+    }
+
+    onShowMoreComments() {
+        this.setState({ showOnlyFirstComments: false });
     }
 
     onEdit(comment) {
@@ -73,27 +94,29 @@ export default class InterpretationComments extends React.Component {
         }
     }
 
-    onSave(comment) {
+    onUpdate(comment) {
         this.props.onSave(comment);
         this.setState({ commentToEdit: null });
     }
 
-    onReply(comment) {
-        const text = comment.user && comment.user.userCredentials ?
-            ("@" + comment.user.userCredentials.username + "\xA0") : "";
-        const newComment = {
-            key: new Date().getTime(),
-            comment: new CommentModel(comment.interpretation, { text }),
-        };
+    onSave(comment) {
+        this.props.onSave(comment);
+        this.setState({ showOnlyFirstComments: false });
+    }
 
+    onReply(comment) {
+        const newComment = comment.getReply(this.context.d2);
         this.setState({ commentToEdit: null, newComment });
     }
 
     render() {
         const { d2 } = this.context;
         const { interpretation, mentions } = this.props;
-        const { commentToEdit, newComment } = this.state;
-        const comments = orderBy(["created"], ["desc"], interpretation.comments);
+        const { commentToEdit, newComment, showOnlyFirstComments } = this.state;
+        const sortedComments = orderBy(["created"], ["asc"], interpretation.comments);
+        const commentsToShowOnInit = 3;
+        const comments = showOnlyFirstComments ? sortedComments.slice(0, commentsToShowOnInit): sortedComments;
+        const hiddenCommentsCount = showOnlyFirstComments ? sortedComments.length - comments.length : 0;
 
         return (
             <div>
@@ -108,28 +131,36 @@ export default class InterpretationComments extends React.Component {
                                 ?
                                     <CommentTextarea
                                         comment={comment}
-                                        onPost={this.onSave}
+                                        onPost={this.onUpdate}
                                         onCancel={this.onCancelEdit}
+                                        mentions={mentions}
                                     />
                                 :
                                     <Comment
                                         d2={d2}
                                         comment={comment}
-                                        showActions={userCanManage(d2, comment)}
-                                        onEdit={() => this.onEdit(comment)}
-                                        onDelete={() => this.onDelete(comment)}
-                                        onReply={() => this.onReply(comment)}
+                                        showManageActions={userCanManage(d2, comment)}
+                                        onEdit={this.onEdit}
+                                        onDelete={this.onDelete}
+                                        onReply={this.onReply}
                                     />
                             }
                         </WithAvatar>
                     )}
+
+                    {showOnlyFirstComments && hiddenCommentsCount > 0 &&
+                        <div style={{width: "100%", textAlign: "center"}}>
+                            <Button onClick={this.onShowMoreComments} style={{display: "inline-block"}}>
+                                {d2.i18n.getTranslation("show_more_comments", {n: hiddenCommentsCount})}
+                            </Button>
+                        </div>
+                    }
                 </div>
 
                 {newComment &&
                     <WithAvatar user={d2.currentUser}>
                         <CommentTextarea
-                            key={newComment.key}
-                            comment={newComment.comment}
+                            comment={newComment}
                             onPost={this.onSave}
                             mentions={mentions}
                         />
