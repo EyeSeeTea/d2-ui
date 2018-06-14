@@ -23,7 +23,7 @@
     "prestart": "yarn localize",
     "watch": "npm run build:es --  --watch",
     "extract-pot": "d2-i18n-extract -p src/ -o i18n/",
-    "localize": "yarn extract-pot && d2-i18n-generate -n NAMESPACE -p ./i18n/ -o ./src/locales/",
+    "localize": "yarn extract-pot && d2-i18n-generate -n d2-ui-interpretations -p ./i18n/ -o ./src/locales/",
     "test-ci": "jest --config=../../jest.config.js packages/interpretations"
   },
   "husky": {
