@@ -33,7 +33,7 @@ msgid "Details"
 msgstr ""
 
 msgid "Owner"
-msgstr "Owner"
+msgstr ""
 
 msgid "Created"
 msgstr ""
