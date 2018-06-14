@@ -16,7 +16,7 @@ const styles = {
         backgroundColor: "#FAFFFA",
         listStyleType: "none",
         fontFamily: "Roboto, sans-serif",
-        height: "200px",
+        maxHeight: "200px",
         overflowY: "auto"
     },
     mentionTitle: {
