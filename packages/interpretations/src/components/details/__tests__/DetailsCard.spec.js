@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import { IntlProvider } from 'react-intl';
 
-import * as helpers from '../../../models/helpers';
 import DetailsCard from '../DetailsCard';
 import { getStubContext } from '../../../../../../config/inject-theme';
 
