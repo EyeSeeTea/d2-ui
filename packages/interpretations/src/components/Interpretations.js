@@ -6,6 +6,14 @@ import DetailsCard from './details/DetailsCard';
 import InterpretationsCard from './interpretations/InterpretationsCard';
 import isEqual from 'lodash/fp/isEqual'
 import pick from 'lodash/fp/pick'
+import i18n from '../locales';
+import moment from 'moment';
+
+function configI18n(d2) {
+    const locale = d2.currentUser.userSettings.settings.keyUiLocale;
+    moment.locale(locale);
+    i18n.changeLanguage(locale);
+}
 
 class Interpretations extends React.Component {
     state = { model: null };
@@ -20,6 +28,7 @@ class Interpretations extends React.Component {
     }
 
     componentDidMount() {
+        configI18n(this.props.d2);
         this.loadModel(this.props);
     }
 
