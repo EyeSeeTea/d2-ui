@@ -41,14 +41,14 @@ describe('Interpretations: Interpretations -> InterpretationDialog component', (
         interpretationDialog = renderComponent();
     });
 
-    it('should render a CKEditor component field with the interpretation as initial text', () => {
-        const textField = interpretationDialog.find("CKEditor");
+    it('should render a RichEditor component field with the interpretation as initial text', () => {
+        const textField = interpretationDialog.find("RichEditor");
         expect(textField).toHaveProp("initialContent", interpretation.text);
     });
 
     describe("when save is clicked with new text", () => {
         beforeEach(() => {
-            interpretationDialog.find("CKEditor").props().onEditorChange("new text");
+            interpretationDialog.find("RichEditor").props().onEditorChange("new text");
             interpretationDialog.instance()._save();
         });
 
@@ -65,7 +65,7 @@ describe('Interpretations: Interpretations -> InterpretationDialog component', (
 
     describe("when cancel is clicked with new text", () => {
         beforeEach(() => {
-            interpretationDialog.find("CKEditor").props().onEditorChange("new text");
+            interpretationDialog.find("RichEditor").props().onEditorChange("new text");
             interpretationDialog.instance()._cancel();
         });
 
