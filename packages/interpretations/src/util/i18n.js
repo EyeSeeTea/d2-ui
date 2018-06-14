@@ -1,11 +1,12 @@
-// Temporal functions until d2-i18n support datetime localization
+import moment from 'moment';
 
-export function formatDate(s) {
-    const date = new Date(s);
-    return [date.getMonth() + 1, date.getDate(), date.getFullYear()].join("/");
+export function formatDate(dateString) {
+    const isoformat = dateString.split(".")[0];
+    const localizedFormat = moment.localeData().longDateFormat('L');
+    return moment(dateString, moment.ISO_8601).format(localizedFormat);
 }
 
-export function formatRelative(s) {
-    const date = new Date(s);
-    return [formatDate(s), date.getHours() + ":" + date.getMinutes()].join(" ");
+export function formatRelative(dateString) {
+    const isoformat = dateString.split(".")[0];
+    return moment(dateString, moment.ISO_8601).fromNow();
 }
