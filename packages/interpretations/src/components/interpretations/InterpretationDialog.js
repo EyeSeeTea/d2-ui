@@ -3,14 +3,9 @@ import PropTypes from 'prop-types';
 import Dialog from 'material-ui/Dialog';
 import { Button } from '@dhis2/d2-ui-core';
 import TextField from 'material-ui/TextField';
-import { config } from 'd2/lib/d2';
 import RichEditor from '../RichEditor';
 import defer from 'lodash/fp/defer';
-
-config.i18n.strings.add('edit_interpretation');
-config.i18n.strings.add('create_interpretation');
-config.i18n.strings.add('cancel');
-config.i18n.strings.add('save');
+import i18n from '@dhis2/d2-i18n'
 
 const styles = {
     dialog: {
@@ -52,12 +47,11 @@ class InterpretationDialog extends Component {
     }
 
     render() {
-        const { d2 } = this.context;
         const { interpretation, onSave, mentions } = this.props;
         const { value, showEditor } = this.state;
         const title = interpretation && interpretation.id
-            ? d2.i18n.getTranslation('edit_interpretation')
-            : d2.i18n.getTranslation('create_interpretation');
+            ? i18n.t('Edit interpretation')
+            : i18n.t('Create interpretation');
 
         return (
             <Dialog
@@ -66,14 +60,14 @@ class InterpretationDialog extends Component {
                 onRequestClose={this.cancel}
                 actions={[
                     <Button color="primary" onClick={this.cancel}>
-                        {d2.i18n.getTranslation('cancel')}
+                        {i18n.t('Cancel')}
                     </Button>,
                     <Button
                         color="primary"
                         disabled={value ? false : true}
                         onClick={this.save}
                     >
-                        {d2.i18n.getTranslation('save')}
+                        {i18n.t('Save')}
                     </Button>,
                 ]}
                 contentStyle={styles.dialog}
@@ -85,7 +79,6 @@ class InterpretationDialog extends Component {
                         initialContent={value}
                         onEditorChange={this.onChange}
                         mentions={mentions}
-                        i18n={d2.i18n.translations}
                     />
                 }
             </Dialog>
@@ -97,10 +90,6 @@ InterpretationDialog.propTypes = {
     interpretation: PropTypes.object.isRequired,
     onSave: PropTypes.func.isRequired,
     onClose: PropTypes.func.isRequired,
-};
-
-InterpretationDialog.contextTypes = {
-    d2: PropTypes.object.isRequired,
 };
 
 export default InterpretationDialog;

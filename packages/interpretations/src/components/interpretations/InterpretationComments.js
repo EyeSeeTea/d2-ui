@@ -3,18 +3,14 @@ import { Link, ActionSeparator, WithAvatar, getUserLink } from './misc';
 import CommentTextarea from './CommentTextarea';
 import { userCanManage } from '../../util/auth';
 import { Button } from '@dhis2/d2-ui-core';
-import { FormattedRelative } from 'react-intl';
 import PropTypes from 'prop-types';
 import CommentModel from '../../models/comment';
-import { config } from 'd2/lib/d2';
+import i18n from '@dhis2/d2-i18n'
 import orderBy from 'lodash/fp/orderBy';
 import styles from './InterpretationsStyles.js';
+import { formatRelative } from '../../util/i18n';
 
-config.i18n.strings.add('edit');
-config.i18n.strings.add('delete');
-config.i18n.strings.add('delete_comment_confirmation');
-
-const Comment = ({ d2, comment, showManageActions, onEdit, onDelete, onReply }) => (
+const Comment = ({ comment, showManageActions, onEdit, onDelete, onReply }) => (
     <div>
         <style>{styles.richTextCss}</style>
         
@@ -22,21 +18,21 @@ const Comment = ({ d2, comment, showManageActions, onEdit, onDelete, onReply }) 
         </div>
 
         <span style={styles.tipText}>
-            <FormattedRelative value={comment.created} />
+            {formatRelative(comment.created)}
         </span>
 
         <ActionSeparator labelText="" />
 
         {showManageActions ?
             <span>
-                <Link label={d2.i18n.getTranslation('edit')} value={comment} onClick={onEdit} />
+                <Link label={i18n.t('Edit')} value={comment} onClick={onEdit} />
                 <ActionSeparator />
-                <Link label={d2.i18n.getTranslation('reply')} value={comment} onClick={onReply} />
+                <Link label={i18n.t('Reply')} value={comment} onClick={onReply} />
                 <ActionSeparator />
-                <Link label={d2.i18n.getTranslation('delete')} value={comment} onClick={onDelete} />
+                <Link label={i18n.t('Delete')} value={comment} onClick={onDelete} />
             </span>
             :
-            <Link label={d2.i18n.getTranslation('reply')} value={comment} onClick={onReply} />
+            <Link label={i18n.t('Reply')} value={comment} onClick={onReply} />
         }
     </div>
 );
@@ -89,7 +85,7 @@ export default class InterpretationComments extends React.Component {
     }
 
     onDelete(comment) {
-        if (confirm(this.context.d2.i18n.getTranslation('delete_comment_confirmation'))) {
+        if (confirm(i18n.t('Are you sure you want to remove this comment?'))) {
             this.props.onDelete(comment);
         }
     }
@@ -138,7 +134,6 @@ export default class InterpretationComments extends React.Component {
                                     />
                                 :
                                     <Comment
-                                        d2={d2}
                                         comment={comment}
                                         showManageActions={userCanManage(d2, comment)}
                                         onEdit={this.onEdit}
@@ -152,7 +147,9 @@ export default class InterpretationComments extends React.Component {
                     {showOnlyFirstComments && hiddenCommentsCount > 0 &&
                         <div style={{width: "100%", textAlign: "center"}}>
                             <Button onClick={this.onShowMoreComments} style={{display: "inline-block"}}>
-                                <span style={{fontSize: "11px", textTransform: "uppercase", paddingLeft: "16px", paddingRight: "16px", fontWeight: "500"}}>{d2.i18n.getTranslation("show_more_comments", {n: hiddenCommentsCount})}</span>
+                                <span style={styles.showMoreComments}>
+                                    {hiddenCommentsCount} {i18n.t("more comments")}
+                                </span>
                             </Button>
                         </div>
                     }
