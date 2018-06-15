@@ -133,8 +133,11 @@ class Interpretation extends React.Component {
                                 {currentUserLikesInterpretation
                                     ? <Link label={i18n.t('Unlike')} onClick={this.unlike} />
                                     : <Link label={i18n.t('Like')} onClick={this.like} />}
+                                    
                                 <ActionSeparator />
+
                                 <Link label={i18n.t('Reply')} onClick={this.reply} />
+
                                 {userCanManage(d2, interpretation) &&
                                     <span className="owner-actions">
                                         <ActionSeparator />

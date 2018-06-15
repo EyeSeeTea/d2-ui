@@ -101,7 +101,6 @@ export default class InterpretationComments extends React.Component {
     }
 
     onReply(comment) {
-        debugger;
         const newComment = comment.getReply(this.context.d2);
         this.setState({ commentToEdit: null, newComment });
     }
