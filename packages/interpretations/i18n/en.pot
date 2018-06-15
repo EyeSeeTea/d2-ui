@@ -5,14 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2018-06-15T08:21:22.599Z\n"
-"PO-Revision-Date: 2018-06-15T08:21:22.599Z\n"
-
-msgid "Most common users matching"
-msgstr ""
-
-msgid "Other users matching"
-msgstr ""
+"POT-Creation-Date: 2018-06-15T10:55:59.533Z\n"
+"PO-Revision-Date: 2018-06-15T10:55:59.533Z\n"
 
 msgid "No description"
 msgstr ""
@@ -51,6 +45,12 @@ msgid "Views"
 msgstr ""
 
 msgid "Sharing"
+msgstr ""
+
+msgid "Most common users matching"
+msgstr ""
+
+msgid "Other users matching"
 msgstr ""
 
 msgid "OK"

@@ -28,7 +28,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn extract-pot && CI=true yarn test && git add -A ."
+      "pre-commit": "yarn extract-pot && CI=true yarn test-ci && git add -A ."
     }
   },
   "dependencies": {
@@ -48,6 +48,7 @@
   },
   "devDependencies": {
     "css-loader": "^0.28.7",
+    "sinon": "^6.0.0",
     "style-loader": "^0.18.2"
   },
   "jest": {

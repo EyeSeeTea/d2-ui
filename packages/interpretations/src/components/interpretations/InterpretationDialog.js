@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Dialog from 'material-ui/Dialog';
 import { Button } from '@dhis2/d2-ui-core';
 import TextField from 'material-ui/TextField';
-import RichEditor from '../RichEditor';
+import RichEditor from '../html-editor/RichEditor';
 import defer from 'lodash/fp/defer';
 import i18n from '@dhis2/d2-i18n'
 

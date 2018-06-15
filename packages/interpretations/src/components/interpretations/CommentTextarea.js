@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { Link, ActionSeparator } from './misc';
 import i18n from '@dhis2/d2-i18n'
 import styles from './InterpretationsStyles.js';
-import RichEditor from '../RichEditor';
+import RichEditor from '../html-editor/RichEditor';
 
 class CommentTextarea extends React.Component {
     static propTypes = {

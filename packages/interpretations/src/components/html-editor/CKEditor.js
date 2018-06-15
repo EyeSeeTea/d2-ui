@@ -302,6 +302,8 @@ CKEditor.propTypes = {
      * set the editor contents (from props.initialContent).
      */
     refresh: PropTypes.any,
-    /* This callback will be called when a key is pressed in the editor */
+    /**
+      * This callback will be called when a key is pressed in the editor
+      */
     onEditorKey: PropTypes.func,
 };

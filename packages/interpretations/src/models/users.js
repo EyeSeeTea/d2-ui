@@ -1,9 +1,9 @@
 import { apiFetch } from '../util/api';
 import { keyBy, filter, map, flatMap, flow, groupBy, without } from 'lodash/fp';
-import { orderBy, concat, toPairs, at, differenceBy } from 'lodash/fp';
+import { orderBy, concat, toPairs, at, differenceBy, compact } from 'lodash/fp';
 
 export async function getMentions(d2) {
-    const allUsersCollection = await d2.models.users.list({
+    const allUsersResponse = await apiFetch("/users", "GET", {
         fields: "id,displayName,userCredentials[username]",
         order: "displayName:asc",
         paging: false,
@@ -21,7 +21,7 @@ export async function getMentions(d2) {
         paging: false,
     });
 
-    const allUsers = allUsersCollection.toArray().map(user => ({
+    const allUsers = allUsersResponse.users.map(user => ({
         id: user.id,
         displayName: user.displayName,
         username: user.userCredentials.username,
@@ -51,10 +51,10 @@ export async function getMentions(d2) {
         sortByFrequency,
     )(interpretationMentions);
 
-    const mostMentionedUsers = at(mostMentionedUsernames, allUsersByUsername);
+    const mostMentionedUsers = compact(at(mostMentionedUsernames, allUsersByUsername));
 
     const allUsersFiltered = differenceBy("id", allUsers, mostMentionedUsers)
-        .filter(user => d2.currentUser.username !== user.username);
+        .filter(user => d2.currentUser.id !== user.id);
 
     return {allUsers: allUsersFiltered, mostMentionedUsers};
 }
