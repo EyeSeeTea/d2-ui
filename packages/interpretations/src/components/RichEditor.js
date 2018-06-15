@@ -15,16 +15,21 @@ const styles = {
         zIndex: 1000000,
         backgroundColor: "#FAFFFA",
         listStyleType: "none",
+        fontFamily: "Roboto, sans-serif",
+        maxHeight: "200px",
+        overflowY: "auto"
     },
     mentionTitle: {
         padding: "5px 15px",
-        borderBottom: "1px solid #999",
-        backgroundColor: "#EAFFEA",
+        borderBottom: "1px solid rgb(224, 224, 224)",
+        fontSize: "0.75rem",
+        fontWeight: 500
     },
     userMention: {
         cursor: "pointer",
         padding: "5px 15px",
-        borderBottom: "1px solid #999",
+        borderBottom: "1px solid rgb(224, 224, 224)",
+        fontSize: "0.75rem"
     },
     userMentionSelected: {
         backgroundColor: "#ACD",
@@ -52,9 +57,15 @@ class UserMatch extends Component {
         const { user, isSelected, pattern } = this.props;
         const style = { ...styles.userMention, ...(isSelected ? styles.userMentionSelected : {}) };
         const text = `${user.displayName} (${user.username})`;
-        const formatted = text
-            .split(new RegExp(`(${pattern})`, 'gi'))
-            .map((part, idx) => part.toLowerCase() === pattern.toLowerCase() ? <b key={idx}>{part}</b> : part);
+        let formatted;
+        if (pattern){
+            formatted = text
+                .split(new RegExp(`(${pattern})`, 'gi'))
+                .map((part, idx) => part.toLowerCase() === pattern.toLowerCase() ? <b key={idx}>{part}</b> : part);
+        }
+        else{
+            formatted = text;
+        }
 
         return (
             <li
@@ -163,8 +174,7 @@ export default class RichEditor extends Component {
         if (currentWord.startsWith("@")) {
             const pattern = currentWord.slice(1);
             const filter = users => users
-                .filter(user => user.displayName.includes(pattern) || user.username.includes(pattern))
-                .slice(0, 7);
+                .filter(user => user.displayName.includes(pattern) || user.username.includes(pattern));
             const mostMentionedUsersFiltered = filter(mentions.mostMentionedUsers);
             const allUsersFiltered = filter(mentions.allUsers);
             const matchingUsers = mostMentionedUsersFiltered.concat(allUsersFiltered);
@@ -193,7 +203,7 @@ export default class RichEditor extends Component {
         const { i18n, ...ckeditorProps } = this.props;
         const getTitleItem = i18nKey => (
             <li key="most-mentioned" style={styles.mentionTitle}>
-                <b>{i18n[i18nKey]} @{pattern}</b>
+                {i18n[i18nKey]} @{pattern}
             </li>
         );
 

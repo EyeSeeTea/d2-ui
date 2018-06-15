@@ -152,7 +152,7 @@ export default class InterpretationComments extends React.Component {
                     {showOnlyFirstComments && hiddenCommentsCount > 0 &&
                         <div style={{width: "100%", textAlign: "center"}}>
                             <Button onClick={this.onShowMoreComments} style={{display: "inline-block"}}>
-                                {d2.i18n.getTranslation("show_more_comments", {n: hiddenCommentsCount})}
+                                <span style={{fontSize: "11px", textTransform: "uppercase", paddingLeft: "16px", paddingRight: "16px", fontWeight: "500"}}>{d2.i18n.getTranslation("show_more_comments", {n: hiddenCommentsCount})}</span>
                             </Button>
                         </div>
                     }
