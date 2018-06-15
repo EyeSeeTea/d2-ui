@@ -28,7 +28,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn extract-pot && CI=true yarn test-ci && git add -A ."
+      "pre-commit": "yarn extract-pot && CI=true yarn test-ci"
     }
   },
   "dependencies": {
