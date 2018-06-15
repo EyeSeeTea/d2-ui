@@ -160,6 +160,14 @@ export default {
         "textDecoration": "none",
     },
 
+    showMoreComments: {
+        "fontSize": "11px",
+        "textTransform": "uppercase",
+        "paddingLeft": "16px",
+        "paddingRight": "16px",
+        "fontWeight": "500",
+    },
+
     richTextCss: `
         .richText p { margin: 0; padding: 0 }
         .richText img { width: 1.3em; height: 1.3em; }

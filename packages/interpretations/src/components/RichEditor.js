@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Dialog from 'material-ui/Dialog';
 import { Portal } from 'react-portal';
-
 import { findIndex } from 'lodash/fp';
+import i18n from '@dhis2/d2-i18n'
 import CKEditor from './CKEditor';
 
 const styles = {
@@ -42,7 +42,6 @@ class UserMatch extends Component {
         this.onUserClick = this.onUserClick.bind(this);
         this.onMouseEnter = this.onChangeSelected.bind(this, true);
         this.onMouseLeave = this.onChangeSelected.bind(this, false);
-        this.state = {};
     }
 
     onUserClick() {
@@ -58,12 +57,12 @@ class UserMatch extends Component {
         const style = { ...styles.userMention, ...(isSelected ? styles.userMentionSelected : {}) };
         const text = `${user.displayName} (${user.username})`;
         let formatted;
-        if (pattern){
+        if (pattern) {
             formatted = text
                 .split(new RegExp(`(${pattern})`, 'gi'))
                 .map((part, idx) => part.toLowerCase() === pattern.toLowerCase() ? <b key={idx}>{part}</b> : part);
         }
-        else{
+        else {
             formatted = text;
         }
 
@@ -106,6 +105,7 @@ export default class RichEditor extends Component {
         this.onMouseSelected = this.onMouseSelected.bind(this);
         this.setMentionsRef = this.setMentionsRef.bind(this);
         this.onDocumentClick = this.onDocumentClick.bind(this);
+        this.userMatchRefs = {};
         this.state = {matchingUsers: [], currentUserIndex: null, splitListIndex: null, pattern: null, position: null};
     }
 
@@ -140,23 +140,33 @@ export default class RichEditor extends Component {
         editor.setCursorAtEnd();
     }
 
+    selectUser(offset) {
+        const { matchingUsers, currentUserIndex } = this.state;
+        const nUsers = matchingUsers.length;
+        const newIndex = (currentUserIndex + offset + nUsers) % nUsers;
+        this.setState({currentUserIndex: newIndex});
+        const el = this.userMatchRefs[newIndex];
+        if (el) {
+            ReactDOM.findDOMNode(el).scrollIntoView();
+        }
+    }
+
     onEditorKey(ev) {
         const { matchingUsers, currentUserIndex } = this.state;
-        if (currentUserIndex === null)
-            return;
-        const nUsers = matchingUsers.length;
         const { keyCode } = ev.data;
 
-        if (keyCode == keycodes.up) {
-            this.setState({currentUserIndex: (currentUserIndex - 1 + nUsers) % nUsers});
+        if (currentUserIndex === null) {
+            return;
+        } else if (keyCode == keycodes.up) {
             ev.cancel();
+            this.selectUser(-1);
         } else if (keyCode == keycodes.down) {
-            this.setState({currentUserIndex: (currentUserIndex + 1) % nUsers});
             ev.cancel();
+            this.selectUser(+1);
         } else if (keyCode == keycodes.enter || keyCode == keycodes.tab) {
+            ev.cancel();
             const currentUser = matchingUsers[currentUserIndex];
             this.insertUser(currentUser);
-            ev.cancel();
         }
     }
 
@@ -198,12 +208,16 @@ export default class RichEditor extends Component {
         this.mentionsArea = mentionsArea;
     }
 
+    setUserMatchRef(userMatchEl, idx) {
+        this.userMatchRefs[idx] = userMatchEl;
+    }
+
     render() {
         const { pattern, matchingUsers, currentUserIndex, splitListIndex, position } = this.state;
-        const { i18n, ...ckeditorProps } = this.props;
-        const getTitleItem = i18nKey => (
+        const { mentions, ...ckeditorProps } = this.props;
+        const getTitleItem = title => (
             <li key="most-mentioned" style={styles.mentionTitle}>
-                {i18n[i18nKey]} @{pattern}
+                {title} @{pattern}
             </li>
         );
 
@@ -213,9 +227,10 @@ export default class RichEditor extends Component {
                     <Portal>
                         <ul style={{...styles.mentions, ...position}} ref={this.setMentionsRef}>
                             {matchingUsers.map((user, idx) => [
-                                idx === 0 && idx !== splitListIndex && getTitleItem("most_common_users_matching"),
-                                idx === splitListIndex && getTitleItem("other_users_matching"),
+                                idx === 0 && idx !== splitListIndex && getTitleItem(i18n.t("Most common users matching")),
+                                idx === splitListIndex && getTitleItem(i18n.t("Other users matching")),
                                 <UserMatch
+                                    ref={el => this.setUserMatchRef(el, idx)}
                                     key={"user-" + user.id}
                                     pattern={pattern}
                                     isSelected={idx === currentUserIndex}
