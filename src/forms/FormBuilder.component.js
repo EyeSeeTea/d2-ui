@@ -2,7 +2,7 @@ import React from 'react';
 import AsyncValidatorRunner from './AsyncValidatorRunner';
 import { isObject } from 'lodash';
 
-import CircularProgres from 'material-ui/CircularProgress';
+import CircularProgress from 'material-ui/CircularProgress';
 
 const noop = () => {};
 
@@ -142,10 +142,12 @@ class FormBuilder extends React.Component {
                 ? field.validatingLabelText || this.props.validatingLabelText
                 : errorTextProp;
 
+            const FieldWrapperComponent = this.props.fieldWrapper || "div";
+
             return (
-                <div key={field.name} style={Object.assign({}, styles.field, this.props.fieldWrapStyle)}>
+                <FieldWrapperComponent key={field.name} style={Object.assign({}, styles.field, this.props.fieldWrapStyle)}>
                     {fieldState.validating ? (
-                        <CircularProgres mode="indeterminate" size={20} style={styles.progress}/>
+                        <CircularProgress mode="indeterminate" size={20} style={styles.progress}/>
                     ) : undefined}
                     <field.component
                         value={fieldState.value}
@@ -154,7 +156,7 @@ class FormBuilder extends React.Component {
                         errorStyle={fieldState.validating ? styles.validatingErrorStyle : undefined}
                         errorText={fieldState.valid ? errorText : fieldState.error}
                         {...props} />
-                </div>
+                </FieldWrapperComponent>
             );
         });
     }
@@ -166,10 +168,12 @@ class FormBuilder extends React.Component {
      * @returns {XML}
      */
     render() {
+        const { id, mainWrapper } = this.props;
+        const MainWrapperComponent = mainWrapper || "div";
         return (
-            <div style={this.props.style}>
+            <MainWrapperComponent id={id} style={this.props.style}>
                 {this.renderFields()}
-            </div>
+            </MainWrapperComponent>
         );
     }
 
@@ -471,6 +475,8 @@ FormBuilder.propTypes = {
     onUpdateFormStatus: React.PropTypes.func,
     style: React.PropTypes.object,
     fieldWrapStyle: React.PropTypes.object,
+    fieldWrapper: React.PropTypes.func,
+    mainWrapper: React.PropTypes.func,
     validateOnRender: React.PropTypes.bool,
     validateFullFormOnChanges: React.PropTypes.bool,
 };
