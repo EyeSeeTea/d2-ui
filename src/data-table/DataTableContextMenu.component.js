@@ -22,7 +22,10 @@ function DataTableContextMenu(props, context) {
     const cmStyle = {
         position: 'fixed',
     };
-    const popoverProps = _.pick(props, _.keys(Popover.propTypes));
+
+    let popoverProps = {};
+    Object.keys(Popover.propTypes).forEach(key => { popoverProps[key] = props[key]; });
+
     return (
         <Popover
             {...popoverProps}
