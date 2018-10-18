@@ -60,6 +60,12 @@ class FormBuilder extends React.Component {
         }
     }
 
+    componentDidMount() {
+        if (this.props.validateOnInitialRender) {
+            this.validateProps(this.props);
+        }
+    }
+
     validateProps(props) {
         this.asyncValidators = this.createAsyncValidators(props);
 
@@ -422,7 +428,7 @@ class FormBuilder extends React.Component {
                 if (pass !== true) {
                     return pass;
                 } else {
-                    const validatorResult = currentValidator.validator(newValue);
+                    const validatorResult = currentValidator.validator(newValue, this.props.id);
                     return validatorResult === true ? true : (currentValidator.message || validatorResult);
                 }
             }, true);
@@ -453,6 +459,7 @@ class FormBuilder extends React.Component {
  * @type {{fields: (Object|isRequired), validatingLabelText: *, validatingProgressStyle: *, onUpdateField: (Function|isRequired)}}
  */
 FormBuilder.propTypes = {
+    id: React.PropTypes.any,
     fields: React.PropTypes.arrayOf(React.PropTypes.shape({
         name: React.PropTypes.string.isRequired,
         value: React.PropTypes.any,
@@ -478,6 +485,7 @@ FormBuilder.propTypes = {
     fieldWrapper: React.PropTypes.func,
     mainWrapper: React.PropTypes.func,
     validateOnRender: React.PropTypes.bool,
+    validateOnInitialRender: React.PropTypes.bool,
     validateFullFormOnChanges: React.PropTypes.bool,
 };
 
@@ -487,6 +495,7 @@ FormBuilder.propTypes = {
  * @type {{validatingLabelText: string, validatingProgressStyle: {position: string, right: number, top: number}}}
  */
 FormBuilder.defaultProps = {
+    id: null,
     validatingLabelText: 'Validating...',
     validatingProgressStyle: {
         position: 'absolute',
@@ -495,6 +504,7 @@ FormBuilder.defaultProps = {
     },
     onUpdateFormStatus: noop,
     validateOnRender: false,
+    validateOnInitialRender: false,
     validateFullFormOnChanges: false,
 };
 

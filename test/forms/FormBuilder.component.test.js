@@ -23,7 +23,7 @@ describe('FormBuilder component', () => {
             fields[0].value = value;
         }
 
-        formComponent = renderComponent({ fields, onUpdateField });
+        formComponent = renderComponent({ fields, onUpdateField, validateOnRender: true });
     });
 
     it('should have a asyncFieldValidator availble on the component', () => {
@@ -88,6 +88,7 @@ describe('FormBuilder component', () => {
                 fields,
                 onUpdateField: onUpdateFieldSpy,
                 onUpdateFormStatus,
+                validateOnRender: true,
             });
         });
 
