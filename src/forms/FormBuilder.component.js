@@ -124,7 +124,7 @@ class FormBuilder extends React.Component {
         };
 
         return this.props.fields.map(field => {
-            const {errorTextProp, changeEvent, ...props} = field.props || {};
+            const {errorTextProp, changeEvent, wrapStyle, ...props} = field.props || {};
             const fieldState = this.state.fields[field.name] || {};
 
             const changeHandler = this.handleFieldChange.bind(this, field.name);
@@ -142,7 +142,7 @@ class FormBuilder extends React.Component {
                 : errorTextProp;
 
             return (
-                <div key={field.name} style={Object.assign({}, styles.field, this.props.fieldWrapStyle)}>
+                <div key={field.name} style={Object.assign({}, styles.field, this.props.fieldWrapStyle, wrapStyle)}>
                     {fieldState.validating ? (
                         <CircularProgres mode="indeterminate" size={20} style={styles.progress}/>
                     ) : undefined}
