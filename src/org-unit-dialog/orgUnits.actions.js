@@ -66,7 +66,7 @@ actions.save.subscribe(action => {
         const objectPluralType = objects[0].modelDefinition.plural;
         const payload = {[objectPluralType]: objectsPayload};
 
-        return api.post('metadata?strategy=UPDATE&mergeMode=MERGE', payload)
+        return api.post('metadata?strategy=UPDATE&mergeMode=REPLACE', payload)
             .then((res) => {
                 if (res.status === 'OK')
                     action.complete();
