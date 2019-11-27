@@ -143,19 +143,35 @@ export default class OrganisationUnitTreeMultiSelect extends React.Component {
     }
 
     _selectAll() {
+        const { currentRoot } = this.state;
+        const { organisationUnits } = this.props.model;
+
         const userOus$ = this.context.d2.models.organisationUnit.list({
             fields: "id,path",
             withinUserHierarchy: true,
             paging: false,
+            ...(currentRoot ? {filter: `path:like:${currentRoot.id}`} : {}),
         });
         userOus$.then(userOus => {
             const selectedPaths = userOus.toArray().map(ou => ou.path);
-            this.setState({ selectedOrgUnits: selectedPaths });
+            userOus.forEach(ou => { organisationUnits.add(ou); });
+            const selectedOrgUnits = organisationUnits.toArray().map(ou => ou.path);
+            this.setState({ selectedOrgUnits }, () => { this.props.onChange(organisationUnits); });
         });
     }
 
     _deselectAll() {
-        this.setState({ selectedOrgUnits: [] });
+        const { currentRoot } = this.state;
+        const { organisationUnits } = this.props.model;
+        organisationUnits.forEach(ou => {
+            if (!currentRoot || ou.path.startsWith(currentRoot.path)) {
+              organisationUnits.remove(ou);
+            }
+        });
+        const selectedOrgUnits = organisationUnits.toArray().map(ou => ou.path);
+
+        this.setState({ selectedOrgUnits },
+            () => { this.props.onChange(organisationUnits); });
     }
 
     render() {
@@ -235,7 +251,7 @@ export default class OrganisationUnitTreeMultiSelect extends React.Component {
                         <Card style={style.card}>
                             <span>
                                 {this.context.d2.i18n.getTranslation('for_all_organisation_units')}
-                                <span style={currentRootStyle}>{this.context.d2.i18n.getTranslation('tree')}</span>:
+                                <span style={currentRootStyle}>{this.state.currentRoot.displayName}</span>:
                             </span>
                             <div style={controlOverlayStyles}></div>
                             <div style={{ marginTop: 8, marginBottom: 16 }}>
@@ -270,7 +286,7 @@ export default class OrganisationUnitTreeMultiSelect extends React.Component {
                             <div>
                                 <OrgUnitSelectAll
                                     selected={this.state.selectedOrgUnits}
-                                    currentRoot={this.state.currentRoot}
+                                    currentRoot={null}
                                     onUpdateSelection={this._setSelection}
                                 />
                             </div>
