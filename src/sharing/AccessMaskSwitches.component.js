@@ -10,9 +10,18 @@ config.i18n.strings.add('can_edit');
 export default createClass({
     propTypes: {
         accessMask: PropTypes.oneOf([
-            '--------',
-            'r-------',
-            'rw------',
+            "--------",
+            "--r-----",
+            "---w----",
+            "--rw----",
+            "r-------",
+            "r-r-----",
+            "r--w----",
+            "r-rw----",
+            "rw------",
+            "rwr-----",
+            "rw-w----",
+            "rwrw----",
         ]).isRequired,
         onChange: PropTypes.func.isRequired,
         name: PropTypes.string.isRequired,
@@ -40,7 +49,8 @@ export default createClass({
     onChange() {
         const viewChar = (this.state.view || this.state.edit) ? 'r' : '-';
         const editChar = this.state.edit ? 'w' : '-';
-        const accessMask = `${viewChar}${editChar}------`;
+        const permission = viewChar + editChar;
+        const accessMask = [permission, permission, "----"].join("");
 
         if (this.props.onChange) {
             this.props.onChange(accessMask);
