@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from "prop-types";
 import { legendItemStore, legendItemStore$, onFieldChange, onFormStatusChange } from './LegendItem.store';
 import { setDialogStateToAction } from './LegendItem.actions';
 import withStateFrom from '../component-helpers/withStateFrom';
@@ -40,12 +41,12 @@ export function EditLegendItem({ fieldConfigs = [], open = false, onItemUpdate, 
         <FlatButton
             label={d2.i18n.getTranslation('cancel')}
             secondary
-            onTouchTap={onCancel}
+            onClick={onCancel}
         />,
         <FlatButton
             label={d2.i18n.getTranslation('ok')}
             primary
-            onTouchTap={onClose}
+            onClick={onClose}
             disabled={isCloseDisabled(isValid)}
         />,
     ];

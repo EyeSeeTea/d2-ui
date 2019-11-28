@@ -1,4 +1,6 @@
-import { PropTypes, createClass, default as React } from 'react';
+import { default as React } from 'react';
+import createReactClass from 'create-react-class';
+import PropTypes from "prop-types";
 import Heading from '../headings/Heading.component';
 import CreatedBy from './CreatedBy.component';
 import ExternalAccess from './ExternalAccess.component';
@@ -18,7 +20,7 @@ config.i18n.strings.add('public_access');
 
 function noop() {}
 
-export default createClass({
+export default createReactClass({
     propTypes: {
         objectsToShare: PropTypes.arrayOf(PropTypes.shape({
             name: PropTypes.string.isRequired,
@@ -29,7 +31,7 @@ export default createClass({
     },
 
     contextTypes: {
-        d2: React.PropTypes.object.isRequired,
+        d2: PropTypes.object.isRequired,
     },
 
     getInitialState() {
@@ -39,7 +41,7 @@ export default createClass({
         };
     },
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         sharingActions.loadObjectSharingState(this.props.objectsToShare)
             .subscribe(noop, (error) => {
                 this.props.onError && this.props.onError(error);
@@ -60,7 +62,7 @@ export default createClass({
             });
     },
 
-    componentWillReceiveProps(newProps) {
+    UNSAFE_componentWillReceiveProps(newProps) {
         sharingActions.loadObjectSharingState(newProps.objectsToShare);
     },
 

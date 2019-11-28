@@ -1,4 +1,6 @@
 import React from 'react';
+import createReactClass from 'create-react-class';
+import PropTypes from "prop-types";
 
 // Material UI
 import Checkbox from 'material-ui/Checkbox';
@@ -6,20 +8,20 @@ import Checkbox from 'material-ui/Checkbox';
 
 // TODO: Rewrite as ES6 class
 /* eslint-disable react/prefer-es6-class */
-export default React.createClass({
+export default createReactClass({
     propTypes: {
-        label: React.PropTypes.string.isRequired,
-        onChange: React.PropTypes.func.isRequired,
-        items: React.PropTypes.arrayOf(React.PropTypes.shape({
-            name: React.PropTypes.string.isRequired,
-            value: React.PropTypes.bool,
-            text: React.PropTypes.string.isRequired,
+        label: PropTypes.string.isRequired,
+        onChange: PropTypes.func.isRequired,
+        items: PropTypes.arrayOf(PropTypes.shape({
+            name: PropTypes.string.isRequired,
+            value: PropTypes.bool,
+            text: PropTypes.string.isRequired,
         })),
-        style: React.PropTypes.object,
+        style: PropTypes.object,
     },
 
     contextTypes: {
-        muiTheme: React.PropTypes.object,
+        muiTheme: PropTypes.object,
     },
 
     getInitialState() {

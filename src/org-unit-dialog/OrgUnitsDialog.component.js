@@ -1,4 +1,6 @@
-import React, { PropTypes, createClass } from 'react';
+import React from 'react';
+import createReactClass from 'create-react-class';
+import PropTypes from "prop-types";
 import { config } from 'd2/lib/d2';
 import Dialog from 'material-ui/Dialog/Dialog';
 import FlatButton from 'material-ui/FlatButton/FlatButton';
@@ -10,7 +12,7 @@ import LoadingMask from '../loading-mask/LoadingMask.component';
 import OrganisationUnitTreeMultiSelect from '../org-unit-select/orgunit-tree-multi-select';
 import Heading from '../headings/Heading.component';
 
-export default createClass({
+export default createReactClass({
     propTypes: {
         objects: PropTypes.arrayOf(PropTypes.object).isRequired,
         onRequestClose: PropTypes.func.isRequired,
@@ -21,7 +23,7 @@ export default createClass({
     mixins: [Translate],
 
     contextTypes: {
-        d2: React.PropTypes.object.isRequired,
+        d2: PropTypes.object.isRequired,
     },
 
     getInitialState() {
@@ -30,7 +32,7 @@ export default createClass({
         };
     },
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         orgUnitsActions.load(this.props.objects);
         this.disposable = orgUnitsStore.subscribe(({objects}) => {
             this.setState({objects})
@@ -128,7 +130,7 @@ export default createClass({
     },
 
     save() {
-        orgUnitsActions.save().subscribe(() => {
+        orgUnitsActions.save({strategy: this.state.updateStrategy}).subscribe(() => {
             this.closeDialog();
             this.onSave();
         });

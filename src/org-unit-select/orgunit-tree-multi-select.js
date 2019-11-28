@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from "prop-types";
 import OrgUnitTree from '../org-unit-tree/OrgUnitTreeMultipleRoots.component';
 import OrgUnitSelectByLevel from './OrgUnitSelectByLevel.component';
 import OrgUnitSelectByGroup from './OrgUnitSelectByGroup.component';
@@ -98,7 +99,7 @@ export default class OrganisationUnitTreeMultiSelect extends React.Component {
             .subscribe((models) => this.setState({ rootOrgUnits: models }));
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         this.setState({
             selectedOrgUnits: nextProps.value.toArray().map(ou => ou.path),
         });
@@ -352,13 +353,13 @@ export default class OrganisationUnitTreeMultiSelect extends React.Component {
     }
 }
 OrganisationUnitTreeMultiSelect.contextTypes = {
-    d2: React.PropTypes.object.isRequired,
+    d2: PropTypes.object.isRequired,
 };
 OrganisationUnitTreeMultiSelect.propTypes = {
-    value: React.PropTypes.object,
-    filters: React.PropTypes.shape({
-        levels: React.PropTypes.string,
-        groups: React.PropTypes.string,
+    value: PropTypes.object,
+    filters: PropTypes.shape({
+        levels: PropTypes.string,
+        groups: PropTypes.string,
     }),
 };
 OrganisationUnitTreeMultiSelect.defaultProps = {

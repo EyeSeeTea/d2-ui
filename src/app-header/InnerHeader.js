@@ -1,4 +1,6 @@
 import React from 'react';
+import createReactClass from 'create-react-class';
+import PropTypes from "prop-types";
 import log from 'loglevel';
 import styles, { whenWidthLargerThan1150 } from './header-bar-styles';
 import { Observable, Subject } from 'rx';
@@ -44,13 +46,13 @@ function saveToLocalStorage(headerData = {}) {
     return headerData;
 }
 
-const InnerHeader = React.createClass({
+const InnerHeader = createReactClass({
     propTypes: {
-        lastUpdate: React.PropTypes.instanceOf(Date),
+        lastUpdate: PropTypes.instanceOf(Date),
     },
 
     contextTypes: {
-        d2: React.PropTypes.object.isRequired,
+        d2: PropTypes.object.isRequired,
     },
 
     getInitialState() {
@@ -63,7 +65,7 @@ const InnerHeader = React.createClass({
         };
     },
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.getSystemSettings(this.context.d2)
             .then(this.getHeaderBarData)
             .catch(this.loadDataFromLocalStorageIfAvailable)
@@ -87,7 +89,7 @@ const InnerHeader = React.createClass({
             );
     },
 
-    componentWillReceiveProps(props) {
+    UNSAFE_componentWillReceiveProps(props) {
         if (this.props.lastUpdate && (this.props.lastUpdate.getTime() - props.lastUpdate.getTime()) !== 0) {
             dhis2.menu.ui.bootstrapMenu();
         }

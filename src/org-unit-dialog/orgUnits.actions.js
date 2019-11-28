@@ -55,6 +55,7 @@ actions.selectionChanged.subscribe(({data: {orgUnits, strategy}}) => {
 });
 
 actions.save.subscribe(action => {
+    console.log({action});
     return getD2().then(d2 => {
         const api = d2.Api.getApi();
         const {objects} = orgUnitsStore.getState();

@@ -1,10 +1,12 @@
 import React from 'react';
+import PropTypes from "prop-types";
 import CircularProgress from 'material-ui/CircularProgress';
+import createReactClass from 'create-react-class';
 
-export default React.createClass({
+export default createReactClass({
     propTypes: {
-        style: React.PropTypes.object,
-        size: React.PropTypes.number,
+        style: PropTypes.object,
+        size: PropTypes.number,
     },
 
     getDefaultProps() {
@@ -14,10 +16,6 @@ export default React.createClass({
         };
     },
 
-    childContextTypes: {
-        muiTheme: React.PropTypes.object.isRequired
-    },
-    
     render() {
         const loadingStatusMask = {
             left: '45%',
@@ -27,8 +25,6 @@ export default React.createClass({
 
         return (
             <CircularProgress
-                mode="indeterminate"
-                size={this.props.size}
                 style={Object.assign(loadingStatusMask, this.props.style)}
             />
         );

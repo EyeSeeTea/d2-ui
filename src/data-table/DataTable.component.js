@@ -1,24 +1,26 @@
 import isArrayOfStrings from 'd2-utilizr/lib/isArrayOfStrings';
 import isIterable from 'd2-utilizr/lib/isIterable';
 import React from 'react';
+import createReactClass from 'create-react-class';
+import PropTypes from "prop-types";
 
 import DataTableHeader from './DataTableHeader.component';
 import DataTableRow from './DataTableRow.component';
 import DataTableContextMenu from './DataTableContextMenu.component';
 
-const DataTable = React.createClass({
+const DataTable = createReactClass({
     propTypes: {
-        contextMenuActions: React.PropTypes.object,
-        contextMenuIcons: React.PropTypes.object,
-        primaryAction: React.PropTypes.func,
-        isContextActionAllowed: React.PropTypes.func,
+        contextMenuActions: PropTypes.object,
+        contextMenuIcons: PropTypes.object,
+        primaryAction: PropTypes.func,
+        isContextActionAllowed: PropTypes.func,
     },
 
     getInitialState() {
         return this.getStateFromProps(this.props);
     },
 
-    componentWillReceiveProps(newProps) {
+    UNSAFE_componentWillReceiveProps(newProps) {
         this.setState(this.getStateFromProps(newProps));
     },
 

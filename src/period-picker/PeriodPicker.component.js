@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from "prop-types";
 import moment from 'moment';
 import log from 'loglevel';
 
@@ -195,7 +196,7 @@ class PeriodPicker extends React.Component {
     }
 }
 PeriodPicker.propTypes = {
-    periodType: React.PropTypes.oneOf([
+    periodType: PropTypes.oneOf([
         'Daily',
         'Weekly',
         'Monthly',
@@ -209,8 +210,8 @@ PeriodPicker.propTypes = {
         'FinancialOct'
     ]).isRequired,
 
-    onPickPeriod: React.PropTypes.func.isRequired,
+    onPickPeriod: PropTypes.func.isRequired,
 };
-PeriodPicker.contextTypes = { d2: React.PropTypes.object.isRequired };
+PeriodPicker.contextTypes = { d2: PropTypes.object.isRequired };
 
 export default PeriodPicker;

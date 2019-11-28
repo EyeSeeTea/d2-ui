@@ -1,21 +1,23 @@
 import camelCaseToUnderscores from 'd2-utilizr/lib/camelCaseToUnderscores';
 import React from 'react';
+import PropTypes from "prop-types";
+import createReactClass from 'create-react-class';
 import classes from 'classnames';
 import Translate from '../i18n/Translate.mixin';
 import ArrowUp from 'material-ui/svg-icons/hardware/keyboard-arrow-up.js';
 import ArrowDown from 'material-ui/svg-icons/hardware/keyboard-arrow-down.js';
 import isString from 'd2-utilizr/lib/isString';
 
-const DataTableHeader = React.createClass({
+const DataTableHeader = createReactClass({
     propTypes: {
-        isOdd: React.PropTypes.bool,
-        name: React.PropTypes.string,
-        text: React.PropTypes.string,
-        contents: React.PropTypes.element,
-        sortable: React.PropTypes.bool,
-        sorting: React.PropTypes.oneOf(['asc', 'desc']),
-        onSortingToggle: React.PropTypes.func,
-        style: React.PropTypes.object,
+        isOdd: PropTypes.bool,
+        name: PropTypes.string,
+        text: PropTypes.string,
+        contents: PropTypes.element,
+        sortable: PropTypes.bool,
+        sorting: PropTypes.oneOf(['asc', 'desc']),
+        onSortingToggle: PropTypes.func,
+        style: PropTypes.object,
     },
 
     mixins: [Translate],

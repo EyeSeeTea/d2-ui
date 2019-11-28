@@ -1,7 +1,9 @@
-import { PropTypes, createClass, default as React } from 'react';
+import { default as React } from 'react';
+import PropTypes from "prop-types";
+import createReactClass from 'create-react-class';
 import AccessMaskSwitches from '../sharing/AccessMaskSwitches.component';
 
-export default createClass({
+export default createReactClass({
     propTypes: {
         userGroupAccesses: PropTypes.array,
         onChange: PropTypes.func.isRequired,
