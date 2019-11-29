@@ -69,7 +69,7 @@ export default createReactClass({
             return (
                 <Toggle
                     label={label}
-                    checked={this.state.updateStrategy === "replace"}
+                    toggled={this.state.updateStrategy === "replace"}
                     onToggle={(ev, newValue) => this.setState({updateStrategy: newValue ? "replace" : "merge"})}
                 />
             );
