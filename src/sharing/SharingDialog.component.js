@@ -1,8 +1,10 @@
 import { config } from 'd2/lib/d2';
+import createReactClass from 'create-react-class';
+import PropTypes from "prop-types";
 import Dialog from 'material-ui/Dialog/Dialog';
 import FlatButton from 'material-ui/FlatButton/FlatButton';
 import IconButton from 'material-ui/IconButton';
-import React, { PropTypes, createClass } from 'react';
+import React from 'react';
 import Translate from '../i18n/Translate.mixin';
 import Sharing from './Sharing.component';
 import sharingStore from './sharing.store';
@@ -10,7 +12,7 @@ import sharingStore from './sharing.store';
 config.i18n.strings.add('close');
 config.i18n.strings.add('sharing_settings');
 
-export default createClass({
+export default createReactClass({
     propTypes: {
         objectsToShare: PropTypes.arrayOf(PropTypes.object).isRequired,
         onRequestClose: PropTypes.func.isRequired,

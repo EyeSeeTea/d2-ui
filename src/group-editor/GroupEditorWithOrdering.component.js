@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from "prop-types";
 import { findDOMNode } from 'react';
 import GroupEditor from './GroupEditor.component';
 import IconButton from 'material-ui/IconButton/IconButton';
@@ -87,7 +88,7 @@ export default class GroupEditorWithOrdering extends React.Component {
     }
 }
 GroupEditorWithOrdering.propTypes = {
-    onOrderChanged: React.PropTypes.func,
+    onOrderChanged: PropTypes.func,
 };
 GroupEditorWithOrdering.defaultProps = {
     onOrderChanged: () => {},

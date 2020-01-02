@@ -1,13 +1,15 @@
 import React from 'react';
+import createReactClass from 'create-react-class';
+import PropTypes from "prop-types";
 import TextField from 'material-ui/TextField';
 
 
 // TODO: Rewrite as ES6 class
 /* eslint-disable react/prefer-es6-class */
-export default React.createClass({
+export default createReactClass({
     propTypes: {
-        value: React.PropTypes.string,
-        multiLine: React.PropTypes.bool,
+        value: PropTypes.string,
+        multiLine: PropTypes.bool,
     },
 
     getInitialState() {
@@ -16,7 +18,7 @@ export default React.createClass({
         };
     },
 
-    componentWillReceiveProps(props) {
+    UNSAFE_componentWillReceiveProps(props) {
         this.setState({ value: props.value });
     },
 

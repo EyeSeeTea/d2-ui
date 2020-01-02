@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from "prop-types";
 import TextField from 'material-ui/TextField/TextField';
 import RaisedButton from 'material-ui/RaisedButton/RaisedButton';
 import FlatButton from 'material-ui/FlatButton/FlatButton';
@@ -140,12 +141,12 @@ export default class Legend extends Component {
             <FlatButton
                 label={this.i18n.getTranslation('cancel')}
                 secondary={true}
-                onTouchTap={this.handleClose}
+                onClick={this.handleClose}
             />,
             <FlatButton
                 label={this.i18n.getTranslation('proceed')}
                 primary={true}
-                onTouchTap={this.handleClose}
+                onClick={this.handleClose}
             />,
         ];
 

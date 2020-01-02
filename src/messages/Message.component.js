@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from "prop-types";
 
 const defaultStyle = {
     padding: '0.5rem 0',

@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from "prop-types";
 import ColorScale from './ColorScale.component';
 import colorbrewer from './colorbrewer';
 import Popover from 'material-ui/Popover/Popover';

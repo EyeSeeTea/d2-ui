@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from "prop-types";
 import ProfileMenu from './menus/ProfileMenu';
 import InnerHeader from './InnerHeader';
 import HeaderMenus from './menus/HeaderMenus';

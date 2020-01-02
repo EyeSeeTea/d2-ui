@@ -1,4 +1,6 @@
-import React, { PropTypes, createClass } from 'react';
+import React from 'react';
+import createReactClass from 'create-react-class';
+import PropTypes from "prop-types";
 import Translate from '../i18n/Translate.mixin';
 import Toggle from 'material-ui/Toggle/Toggle';
 import ClearFix from 'material-ui/internal/ClearFix';
@@ -7,7 +9,7 @@ import { config } from 'd2/lib/d2';
 config.i18n.strings.add('can_view');
 config.i18n.strings.add('can_edit');
 
-export default createClass({
+export default createReactClass({
     propTypes: {
         accessMask: PropTypes.oneOf([
             "--------",

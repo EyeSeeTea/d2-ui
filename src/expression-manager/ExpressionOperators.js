@@ -1,10 +1,12 @@
 import React from 'react';
+import createReactClass from 'create-react-class';
+import PropTypes from "prop-types";
 import classes from 'classnames';
 import FlatButton from 'material-ui/FlatButton/FlatButton';
 
-const ExpressionOperators = React.createClass({
+const ExpressionOperators = createReactClass({
     propTypes: {
-        operatorClicked: React.PropTypes.func.isRequired,
+        operatorClicked: PropTypes.func.isRequired,
     },
 
     render() {

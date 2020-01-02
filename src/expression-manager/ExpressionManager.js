@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from "prop-types";
 import ExpressionDescription from './ExpressionDescription';
 import ExpressionOperators from './ExpressionOperators';
 import ExpressionFormula from './ExpressionFormula';
@@ -79,7 +80,7 @@ class ExpressionManager extends Component {
         this.requestExpressionStatusAction = Action.create('requestExpressionStatus');
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         if (!this.props.expressionStatusStore) {
             return true;
         }

@@ -1,12 +1,14 @@
 import React from 'react';
+import createReactClass from 'create-react-class';
+import PropTypes from "prop-types";
 import Checkbox from 'material-ui/Checkbox';
 
 
 // TODO: Rewrite as ES6 class
 /* eslint-disable react/prefer-es6-class */
-export default React.createClass({
+export default createReactClass({
     propTypes: {
-        onChange: React.PropTypes.func.isRequired,
+        onChange: PropTypes.func.isRequired,
     },
 
     render() {

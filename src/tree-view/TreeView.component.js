@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from "prop-types";
 
 
 class TreeView extends React.Component {
@@ -24,7 +25,7 @@ class TreeView extends React.Component {
         });
     }
 
-    componentWillReceiveProps(newProps) {
+    UNSAFE_componentWillReceiveProps(newProps) {
         // When initiallyExpanded status changed and the tree is collapsed we fire a toggleEvent to open it up
         if (newProps.initiallyExpanded && this.state.collapsed) {
             this.toggleCollapsed();
@@ -90,22 +91,22 @@ class TreeView extends React.Component {
             );
 
         const className = `tree-view ${this.props.className}`;
-        return <div className={className} style={Object.assign(styles.tree, this.props.style)}>{label}{children}</div>;
+        return <div className={className} style={Object.assign({}, styles.tree, this.props.style)}>{label}{children}</div>;
     }
 }
 
 // TODO: Documentation
 TreeView.propTypes = {
-    label: React.PropTypes.node.isRequired,
-    children: React.PropTypes.node,
-    persistent: React.PropTypes.bool,
-    initiallyExpanded: React.PropTypes.bool,
-    arrowSymbol: React.PropTypes.node,
-    style: React.PropTypes.object,
-    className: React.PropTypes.string,
+    label: PropTypes.node.isRequired,
+    children: PropTypes.node,
+    persistent: PropTypes.bool,
+    initiallyExpanded: PropTypes.bool,
+    arrowSymbol: PropTypes.node,
+    style: PropTypes.object,
+    className: PropTypes.string,
 
-    onExpand: React.PropTypes.func,
-    onClick: React.PropTypes.func,
+    onExpand: PropTypes.func,
+    onClick: PropTypes.func,
 };
 
 TreeView.defaultProps = {
