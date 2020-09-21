@@ -67,7 +67,7 @@ class OrgUnitTree extends React.Component {
             this.state.children = props.root.children
                 .toArray()
                 // Sort here since the API returns nested children in random order
-                .sort((a, b) => a.displayName.localeCompare(b.displayName));
+                .sort((a, b) => this.getName(a).localeCompare(this.getName(b)));
         }
 
         this.loadChildren = this.loadChildren.bind(this);
@@ -90,7 +90,7 @@ class OrgUnitTree extends React.Component {
     setChildState(children) {
         this.props.onChildrenLoaded && this.props.onChildrenLoaded(children);
         this.setState({
-            children: children.toArray().sort((a, b) => a.displayName.localeCompare(b.displayName)),
+            children: children.toArray().sort((a, b) => this.getName(a).localeCompare(this.getName(b))),
             loading: false,
         });
     }
@@ -104,16 +104,20 @@ class OrgUnitTree extends React.Component {
                 root.modelDefinition.list({
                     filter: `parent.id:eq:${root.id}`,
                     paging: false,
-                    fields: 'id,displayName,children::isNotEmpty,path,parent,memberCount',
+                    fields: 'id,shortName,displayName,children::isNotEmpty,path,parent,memberCount',
                     memberObject: this.props.memberObject,
                     memberCollection: this.props.memberCollection,
                 }).then(units => this.setChildState(units));
             } else {
                 root.modelDefinition.get(root.id, {
-                    fields: 'children[id,displayName,children::isNotEmpty,path,parent]',
+                    fields: 'children[id,shortName,displayName,children::isNotEmpty,path,parent]',
                 }).then(unit => this.setChildState(unit.children));
             }
         }
+    }
+
+    getName(orgUnit) {
+        return orgUnit && (orgUnit.shortName || orgUnit.displayName) || "";
     }
 
     handleSelectClick(e) {
@@ -210,7 +214,7 @@ class OrgUnitTree extends React.Component {
                     <input type="checkbox" readOnly disabled={!isSelectable} checked={isSelected}
                            onClick={this.handleSelectClick}/>
                 )}
-                {currentOu.displayName}
+                {this.getName(currentOu)}
                 {hasChildren && !this.props.hideMemberCount && !!memberCount && (
                     <span style={styles.memberCount}>({memberCount})</span>
                 )}
