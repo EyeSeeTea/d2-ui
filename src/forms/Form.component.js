@@ -1,4 +1,6 @@
 import React from 'react';
+import PropTypes from "prop-types";
+import createReactClass from 'create-react-class';
 import classes from 'classnames';
 import FormField from './FormField.component';
 import Translate from '../i18n/Translate.mixin';
@@ -6,22 +8,22 @@ import createFormValidator from './FormValidator';
 import { FormFieldStatuses } from './FormValidator';
 
 
-const Form = React.createClass({
+const Form = createReactClass({
     propTypes: {
-        fieldConfigs: React.PropTypes.arrayOf(
-            React.PropTypes.shape({
-                name: React.PropTypes.string.isRequired,
-                type: React.PropTypes.func.isRequired,
-                fieldOptions: React.PropTypes.object,
-                validators: React.PropTypes.arrayOf(React.PropTypes.func),
+        fieldConfigs: PropTypes.arrayOf(
+            PropTypes.shape({
+                name: PropTypes.string.isRequired,
+                type: PropTypes.func.isRequired,
+                fieldOptions: PropTypes.object,
+                validators: PropTypes.arrayOf(PropTypes.func),
             })
         ).isRequired,
-        formValidator: React.PropTypes.object,
-        onFormFieldUpdate: React.PropTypes.func,
-        source: React.PropTypes.object.isRequired,
-        children: React.PropTypes.oneOfType([
-            React.PropTypes.array,
-            React.PropTypes.object,
+        formValidator: PropTypes.object,
+        onFormFieldUpdate: PropTypes.func,
+        source: PropTypes.object.isRequired,
+        children: PropTypes.oneOfType([
+            PropTypes.array,
+            PropTypes.object,
         ]),
     },
 
@@ -42,7 +44,7 @@ const Form = React.createClass({
         }));
     },
 
-    componentWillReceiveProps(props) {
+    UNSAFE_componentWillReceiveProps(props) {
         if (props.hasOwnProperty('formValidator')) {
             this.forceUpdate();
         }

@@ -1,4 +1,6 @@
 import React from 'react';
+import createReactClass from 'create-react-class';
+import PropTypes from "prop-types";
 import { render } from 'react-dom';
 import { init } from 'd2/lib/d2';
 import HeaderBar from './HeaderBar';
@@ -31,9 +33,9 @@ export function initHeaderBar(domElement, apiLocation, config = {}) {
 
     const HeaderBarWithState = withStateFrom(headerBarStore$, HeaderBar);
 
-    const HeaderBarWithContext = React.createClass({
+    const HeaderBarWithContext = createReactClass({
         childContextTypes: {
-            d2: React.PropTypes.object,
+            d2: PropTypes.object,
         },
 
         getChildContext() {

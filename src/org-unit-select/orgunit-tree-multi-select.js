@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from "prop-types";
 import OrgUnitTree from '../org-unit-tree/OrgUnitTreeMultipleRoots.component';
 import OrgUnitSelectByLevel from './OrgUnitSelectByLevel.component';
 import OrgUnitSelectByGroup from './OrgUnitSelectByGroup.component';
@@ -40,11 +41,18 @@ export default class OrganisationUnitTreeMultiSelect extends React.Component {
         };
 
         const { levels: levelsFilter, groups: groupsFilter } = this.props.filters || {};
+        const hasModel = this.props.model && this.props.model.id;
 
         Promise.all([
             d2.currentUser.getOrganisationUnits({
-                memberCollection: overlyComplicatedTemporaryFixForWeirdlyNamedFields(this.props.modelDefinition.plural),
-                memberObject: this.props.model.id,
+                ...(hasModel
+                    ? {
+                          memberCollection: overlyComplicatedTemporaryFixForWeirdlyNamedFields(
+                              this.props.modelDefinition.plural
+                          ),
+                          memberObject: this.props.model.id,
+                      }
+                    : {}),
                 fields: 'id,path,displayName,code,level,children::isNotEmpty',
             }),
             d2.models.organisationUnitLevels.list({
@@ -98,7 +106,7 @@ export default class OrganisationUnitTreeMultiSelect extends React.Component {
             .subscribe((models) => this.setState({ rootOrgUnits: models }));
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         this.setState({
             selectedOrgUnits: nextProps.value.toArray().map(ou => ou.path),
         });
@@ -143,19 +151,35 @@ export default class OrganisationUnitTreeMultiSelect extends React.Component {
     }
 
     _selectAll() {
+        const { currentRoot } = this.state;
+        const { organisationUnits } = this.props.model;
+
         const userOus$ = this.context.d2.models.organisationUnit.list({
             fields: "id,path",
             withinUserHierarchy: true,
             paging: false,
+            ...(currentRoot ? {filter: `path:like:${currentRoot.id}`} : {}),
         });
         userOus$.then(userOus => {
             const selectedPaths = userOus.toArray().map(ou => ou.path);
-            this.setState({ selectedOrgUnits: selectedPaths });
+            userOus.forEach(ou => { organisationUnits.add(ou); });
+            const selectedOrgUnits = organisationUnits.toArray().map(ou => ou.path);
+            this.setState({ selectedOrgUnits }, () => { this.props.onChange(organisationUnits); });
         });
     }
 
     _deselectAll() {
-        this.setState({ selectedOrgUnits: [] });
+        const { currentRoot } = this.state;
+        const { organisationUnits } = this.props.model;
+        organisationUnits.forEach(ou => {
+            if (!currentRoot || ou.path.startsWith(currentRoot.path)) {
+              organisationUnits.remove(ou);
+            }
+        });
+        const selectedOrgUnits = organisationUnits.toArray().map(ou => ou.path);
+
+        this.setState({ selectedOrgUnits },
+            () => { this.props.onChange(organisationUnits); });
     }
 
     render() {
@@ -235,7 +259,7 @@ export default class OrganisationUnitTreeMultiSelect extends React.Component {
                         <Card style={style.card}>
                             <span>
                                 {this.context.d2.i18n.getTranslation('for_all_organisation_units')}
-                                <span style={currentRootStyle}>{this.context.d2.i18n.getTranslation('tree')}</span>:
+                                <span style={currentRootStyle}>{this.state.currentRoot.displayName}</span>:
                             </span>
                             <div style={controlOverlayStyles}></div>
                             <div style={{ marginTop: 8, marginBottom: 16 }}>
@@ -270,7 +294,7 @@ export default class OrganisationUnitTreeMultiSelect extends React.Component {
                             <div>
                                 <OrgUnitSelectAll
                                     selected={this.state.selectedOrgUnits}
-                                    currentRoot={this.state.currentRoot}
+                                    currentRoot={null}
                                     onUpdateSelection={this._setSelection}
                                 />
                             </div>
@@ -336,13 +360,13 @@ export default class OrganisationUnitTreeMultiSelect extends React.Component {
     }
 }
 OrganisationUnitTreeMultiSelect.contextTypes = {
-    d2: React.PropTypes.object.isRequired,
+    d2: PropTypes.object.isRequired,
 };
 OrganisationUnitTreeMultiSelect.propTypes = {
-    value: React.PropTypes.object,
-    filters: React.PropTypes.shape({
-        levels: React.PropTypes.string,
-        groups: React.PropTypes.string,
+    value: PropTypes.object,
+    filters: PropTypes.shape({
+        levels: PropTypes.string,
+        groups: PropTypes.string,
     }),
 };
 OrganisationUnitTreeMultiSelect.defaultProps = {

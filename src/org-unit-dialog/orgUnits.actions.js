@@ -55,6 +55,7 @@ actions.selectionChanged.subscribe(({data: {orgUnits, strategy}}) => {
 });
 
 actions.save.subscribe(action => {
+    console.log({action});
     return getD2().then(d2 => {
         const api = d2.Api.getApi();
         const {objects} = orgUnitsStore.getState();
@@ -66,7 +67,7 @@ actions.save.subscribe(action => {
         const objectPluralType = objects[0].modelDefinition.plural;
         const payload = {[objectPluralType]: objectsPayload};
 
-        return api.post('metadata?strategy=UPDATE&mergeMode=MERGE', payload)
+        return api.post('metadata?strategy=UPDATE&mergeMode=REPLACE', payload)
             .then((res) => {
                 if (res.status === 'OK')
                     action.complete();

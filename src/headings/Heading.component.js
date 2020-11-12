@@ -1,4 +1,5 @@
-import {PropTypes, default as React} from 'react';
+import {default as React} from 'react';
+import PropTypes from "prop-types";
 
 function Heading(props) {
     const {

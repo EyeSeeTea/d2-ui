@@ -27,7 +27,9 @@
   "peerDependencies": {
     "material-ui": "^0.17",
     "d3-color": "1.0.2",
-    "webpack-visualizer-plugin": "^0.1.5"
+    "webpack-visualizer-plugin": "^0.1.5",
+    "react": "^16",
+    "react-dom": "^16"
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
@@ -43,6 +45,7 @@
     "classnames": "^2.2.5",
     "codeclimate-test-reporter": "^0.4.0",
     "colors": "^1.1.2",
+    "create-react-class": "^15.6.3",
     "css-loader": "^0.26.1",
     "d2": "^26.1.12",
     "d2-utilizr": "^0.2.11",
@@ -57,12 +60,8 @@
     "node-pre-gyp": "^0.6.30",
     "node-sass": "^4.1.1",
     "nyc": "^10.0.0",
-    "react": "15.4",
-    "react-addons-test-utils": "^15.3.2",
-    "react-color": "^2.11.3",
-    "react-dom": "15.4",
-    "react-stub-context": "^0.7.0",
-    "react-tap-event-plugin": "^2.0.1",
+    "react": "^16",
+    "react-dom": "^16",
     "rx": "^4.1.0",
     "sass-loader": "^4.0.2",
     "sinon": "^1.17.6",

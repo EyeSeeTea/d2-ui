@@ -1,4 +1,6 @@
 import React from 'react';
+import PropTypes from "prop-types";
+import createReactClass from 'create-react-class';
 import List from 'material-ui/List/List';
 import ListItem from 'material-ui/List/ListItem';
 import TextField from 'material-ui/TextField';
@@ -46,31 +48,31 @@ const styles = {
 };
 
 
-const Sidebar = React.createClass({
+const Sidebar = createReactClass({
     propTypes: {
-        sections: React.PropTypes.arrayOf(React.PropTypes.shape({
-            key: React.PropTypes.string,
-            label: React.PropTypes.string,
-            icon: React.PropTypes.oneOfType([
-                React.PropTypes.string,
-                React.PropTypes.element,
+        sections: PropTypes.arrayOf(PropTypes.shape({
+            key: PropTypes.string,
+            label: PropTypes.string,
+            icon: PropTypes.oneOfType([
+                PropTypes.string,
+                PropTypes.element,
             ]),
         })).isRequired,
-        currentSection: React.PropTypes.string,
-        onChangeSection: React.PropTypes.func.isRequired,
-        onSectionClick: React.PropTypes.func,
-        showSearchField: React.PropTypes.bool,
-        searchFieldLabel: React.PropTypes.string,
-        onChangeSearchText: React.PropTypes.func,
-        sideBarButtons: React.PropTypes.element,
-        styles: React.PropTypes.shape({
-            leftBar: React.PropTypes.object,
+        currentSection: PropTypes.string,
+        onChangeSection: PropTypes.func.isRequired,
+        onSectionClick: PropTypes.func,
+        showSearchField: PropTypes.bool,
+        searchFieldLabel: PropTypes.string,
+        onChangeSearchText: PropTypes.func,
+        sideBarButtons: PropTypes.element,
+        styles: PropTypes.shape({
+            leftBar: PropTypes.object,
         }),
     },
 
     contextTypes: {
-        d2: React.PropTypes.object,
-        muiTheme: React.PropTypes.object,
+        d2: PropTypes.object,
+        muiTheme: PropTypes.object,
     },
 
     getDefaultProps() {
@@ -90,7 +92,7 @@ const Sidebar = React.createClass({
         };
     },
 
-    componentWillReceiveProps(props) {
+    UNSAFE_componentWillReceiveProps(props) {
         if (props.currentSection) {
             this.setState({ currentSection: props.currentSection });
         }
@@ -190,7 +192,7 @@ const Sidebar = React.createClass({
 
     render() {
         return (
-            <div style={Object.assign(styles.sidebar, this.props.styles.leftBar)} className="left-bar">
+            <div style={Object.assign({}, styles.sidebar, this.props.styles.leftBar)} className="left-bar">
                 {this.renderSidebarButtons()}
                 {this.renderSearchField()}
                 {this.renderSections()}

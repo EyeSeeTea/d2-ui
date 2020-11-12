@@ -1,8 +1,10 @@
-import { PropTypes, default as React } from 'react';
+import { default as React } from 'react';
+import PropTypes from "prop-types";
+import createReactClass from 'create-react-class';
 import classes from 'classnames';
 import LinearProgress from 'material-ui/LinearProgress';
 
-const emptyComponent = React.createClass({ render() { return null; } });
+const emptyComponent = createReactClass({ render() { return null; } });
 
 /**
  * Is required to be a direct child of the `Form.component`
@@ -15,7 +17,7 @@ const emptyComponent = React.createClass({ render() { return null; } });
  * The field fires an update request for the value by calling `onChange` by default but it is optional to set the update event to `onBlur`.
  * Pass the string `onBlur` to `updateEvent` to update the `<Form>` component on blur.
  */
-const FormField = React.createClass({  // eslint-disable-line react/no-multi-comp
+const FormField = createReactClass({  // eslint-disable-line react/no-multi-comp
     propTypes: {
         type: PropTypes.func.isRequired,
         isValid: PropTypes.bool.isRequired,

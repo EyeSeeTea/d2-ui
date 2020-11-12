@@ -1,4 +1,6 @@
 import React from 'react';
+import PropTypes from "prop-types";
+import createReactClass from 'create-react-class';
 import { findDOMNode } from 'react-dom';
 
 // Material UI
@@ -20,35 +22,35 @@ config.i18n.strings.add('assign_all');
 config.i18n.strings.add('remove_all');
 config.i18n.strings.add('hidden_by_filters');
 
-export default React.createClass({
+export default createReactClass({
     propTypes: {
         // itemStore: d2-ui store containing all available items, either as a D2 ModelCollection,
         // or an array on the following format: [{value: 1, text: '1'}, {value: 2, text: '2'}, ...]
-        itemStore: React.PropTypes.object.isRequired,
+        itemStore: PropTypes.object.isRequired,
 
         // assignedItemStore: d2-ui store containing all items assigned to the current group, either
         // as a D2 ModelCollectionProperty or an array of ID's that match values in the itemStore
-        assignedItemStore: React.PropTypes.object.isRequired,
+        assignedItemStore: PropTypes.object.isRequired,
 
         // filterText: A string that will be used to filter items in both columns
-        filterText: React.PropTypes.string,
+        filterText: PropTypes.string,
 
         // Note: Callbacks should return a promise that will resolve when the operation succeeds
         // and is rejected when it fails. The component will be in a loading state until the promise
         // resolves or is rejected.
 
         // assign items callback, called with an array of values to be assigned to the group
-        onAssignItems: React.PropTypes.func.isRequired,
+        onAssignItems: PropTypes.func.isRequired,
 
         // remove items callback, called with an array of values to be removed from the group
-        onRemoveItems: React.PropTypes.func.isRequired,
+        onRemoveItems: PropTypes.func.isRequired,
 
         // The height of the component, defaults to 500px
-        height: React.PropTypes.number,
+        height: PropTypes.number,
     },
 
     contextTypes: {
-        d2: React.PropTypes.object,
+        d2: PropTypes.object,
     },
 
     mixins: [TranslateMixin],
@@ -60,7 +62,7 @@ export default React.createClass({
         this.disposables.push(this.props.assignedItemStore.subscribe(() => this.forceUpdate()));
     },
 
-    componentWillReceiveProps(props) {
+    UNSAFE_componentWillReceiveProps(props) {
         if (props.hasOwnProperty('filterText') && this.leftSelect && this.rightSelect) {
             this.setState({
                 selectedLeft: [].filter.call(this.leftSelect.selectedOptions, item => item.text.toLowerCase().indexOf(('' + props.filterText).trim().toLowerCase()) !== -1).length,

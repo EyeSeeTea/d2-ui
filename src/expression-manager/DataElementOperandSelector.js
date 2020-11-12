@@ -1,4 +1,6 @@
 import React from 'react';
+import PropTypes from "prop-types";
+import createReactClass from 'create-react-class';
 import ListSelectAsync from '../list-select/ListSelectAsync.component';
 import TextField from 'material-ui/TextField/TextField';
 import LinearProgress from 'material-ui/LinearProgress/LinearProgress';
@@ -10,12 +12,12 @@ import { config } from 'd2/lib/d2';
 
 config.i18n.strings.add('search_by_name');
 
-const DataElementOperandSelector = React.createClass({
+const DataElementOperandSelector = createReactClass({
     propTypes: {
-        dataElementOperandSelectorActions: React.PropTypes.object,
-        dataElementOperandStore: React.PropTypes.object,
-        onItemDoubleClick: React.PropTypes.func.isRequired,
-        listStyle: React.PropTypes.object,
+        dataElementOperandSelectorActions: PropTypes.object,
+        dataElementOperandStore: PropTypes.object,
+        onItemDoubleClick: PropTypes.func.isRequired,
+        listStyle: PropTypes.object,
     },
 
     mixins: [Translate],
@@ -37,7 +39,7 @@ const DataElementOperandSelector = React.createClass({
         };
     },
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.actionSubscriptions = subscribeDataElementActionsToStore(this.props.dataElementOperandSelectorActions, this.props.dataElementOperandStore);
 
         if (this.props.dataElementOperandSelectorActions) {

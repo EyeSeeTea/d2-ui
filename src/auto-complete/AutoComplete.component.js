@@ -1,4 +1,6 @@
-import {createClass, PropTypes, default as React} from 'react';
+import {default as React} from 'react';
+import createReactClass from 'create-react-class';
+import PropTypes from "prop-types";
 import TextField from 'material-ui/TextField';
 import Action from '../action/Action';
 import {Observable, helpers, Scheduler, default as Rx} from 'rx';
@@ -30,7 +32,7 @@ function searchByForModel(searchBy, modelTypeToSearch, valueToSearchFor, options
     return Observable.fromPromise(searchQueryRequest);
 }
 
-const AutoComplete = createClass({
+const AutoComplete = createReactClass({
     propTypes: {
         actions: PropTypes.object,
         forType: PropTypes.string.isRequired,
@@ -61,7 +63,7 @@ const AutoComplete = createClass({
         };
     },
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         const {actions, forType} = this.props;
         let searchValue;
 

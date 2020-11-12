@@ -1,20 +1,22 @@
 import React from 'react';
+import createReactClass from 'create-react-class';
+import PropTypes from "prop-types";
 import log from 'loglevel';
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
-export default React.createClass({
+export default createReactClass({
     propTypes: {
-        children: React.PropTypes.element,
-        d2: React.PropTypes.shape({
-            then: React.PropTypes.func.isRequired,
+        children: PropTypes.element,
+        d2: PropTypes.shape({
+            then: PropTypes.func.isRequired,
         }),
     },
 
     childContextTypes: {
-        d2: React.PropTypes.object,
-        muiTheme: React.PropTypes.object.isRequired
+        d2: PropTypes.object,
+        muiTheme: PropTypes.object.isRequired
     },
 
     getChildContext() {
